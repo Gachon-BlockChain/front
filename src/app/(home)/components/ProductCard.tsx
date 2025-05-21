@@ -20,7 +20,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/product/${product.id}`} className="flex gap-4">
-      <div className="flex-shrink-0 relative w-[110px] h-[110px] border border-black rounded overflow-hidden">
+      <div className="flex-shrink-0 relative w-[110px] h-[110px] border rounded overflow-hidden">
         <Image
           src={product.image[0]}
           alt={product.title}
