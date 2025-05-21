@@ -8,7 +8,15 @@ import {
 import { products } from "@/constant/constData";
 import React from "react";
 
-export default function CategoryBar() {
+interface CategoryBarProps {
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
+}
+
+export default function CategoryBar({
+  selectedCategory,
+  onCategoryChange,
+}: CategoryBarProps) {
   // 카테고리 중복 제거
   const uniqueCategories = [
     ...new Set(products.map((product) => product.category)),
@@ -17,11 +25,12 @@ export default function CategoryBar() {
   return (
     <div className="flex justify-between items-center p-3 border-b border-gray-100">
       <div className="flex items-center gap-1.5">
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
+        <Select value={selectedCategory} onValueChange={onCategoryChange}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="카테고리" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="전체">전체</SelectItem>
             {uniqueCategories.map((category, index) => (
               <SelectItem key={index} value={category}>
                 {category}
