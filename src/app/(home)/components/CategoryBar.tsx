@@ -31,8 +31,8 @@ export default function CategoryBar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="전체">전체</SelectItem>
-            {uniqueCategories.map((category, index) => (
-              <SelectItem key={index} value={category}>
+            {uniqueCategories.map((category) => (
+              <SelectItem key={category} value={category}>
                 {category}
               </SelectItem>
             ))}
