@@ -13,7 +13,7 @@ export default function ProfileSection() {
 
         <div className="ml-4 flex-1">
           <h3 className="text-lg font-semibold">사용자 이름</h3>
-          <p className="text-sm text-gray-500">example@email.com</p>
+          <p className="text-sm text-gray-500">0x1234...5678</p>
         </div>
 
         <button className="flex items-center text-sm text-gray-500">
@@ -31,11 +31,6 @@ export default function ProfileSection() {
         <div className="text-center flex-1">
           <p className="text-lg font-semibold">36</p>
           <p className="text-xs text-gray-500">거래 건수</p>
-        </div>
-        <div className="w-px bg-gray-200 h-10 my-auto"></div>
-        <div className="text-center flex-1">
-          <p className="text-lg font-semibold">142</p>
-          <p className="text-xs text-gray-500">팔로워</p>
         </div>
       </div>
     </div>

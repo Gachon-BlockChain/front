@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
 // 판매 중인 상품 목록을 위한 가상 데이터
@@ -9,21 +10,21 @@ const mockProducts = [
     title: "스타벅스 아메리카노 Tall",
     price: 4500,
     expiryDate: "2024-12-31",
-    imageUrl: "/images/sample/coffee1.jpg",
+    imageUrl: "/images/sample/starbucks.jpg",
   },
   {
     id: 2,
     title: "배스킨라빈스 싱글레귤러",
     price: 3500,
     expiryDate: "2024-11-15",
-    imageUrl: "/images/sample/icecream.jpg",
+    imageUrl: "/images/sample/baskin.jpg",
   },
   {
     id: 3,
     title: "CGV 영화 관람권",
     price: 11000,
     expiryDate: "2025-01-20",
-    imageUrl: "/images/sample/movie.jpg",
+    imageUrl: "/images/sample/cu.jpg",
   },
 ];
 
@@ -49,9 +50,12 @@ export default function CurrentSales() {
               className="flex items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0"
             >
               <div className="relative w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
-                <div
-                  className="w-full h-full bg-center bg-cover"
-                  style={{ backgroundImage: `url(${product.imageUrl})` }}
+                <Image
+                  src={product.imageUrl}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
                 />
               </div>
 
