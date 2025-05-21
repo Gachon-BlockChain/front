@@ -1,6 +1,9 @@
+"use client";
+
 import React, { useMemo } from "react";
 import TransactionProductCard from "./TransactionProductCard";
 import { products } from "@/constant/constData";
+import { useSearchParams } from "next/navigation";
 
 // 더미 거래 상태 데이터 (실제로는 서버에서 가져옴)
 const transactionData = products.map(
@@ -14,13 +17,11 @@ const transactionData = products.map(
     } as const)
 );
 
-interface TransactionProductListProps {
-  type: "purchase" | "sale";
-}
+export default function TransactionProductList() {
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type") || "purchase";
+  const type = typeParam === "sale" ? "sale" : "purchase";
 
-export default function TransactionProductList({
-  type,
-}: TransactionProductListProps) {
   // 판매/구매 내역에 따라 필터링 (실제로는 API 호출로 분리될 것)
   const filteredProducts = useMemo(() => {
     // 더미 데이터에서는 임의로 짝수/홀수 인덱스로 구분

@@ -9,17 +9,16 @@ import BottomPurchaseBar from "@/app/(home)/product/[id]/components/BottomPurcha
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
-}
+type ParamsType = Promise<{ id: string }>;
 
 // 동적 메타데이터 생성
 export async function generateMetadata({
   params,
-}: ProductPageProps): Promise<Metadata> {
-  const productId = parseInt(params.id);
+}: {
+  params: ParamsType;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const productId = parseInt(id);
   const product = products.find((p) => p.id === productId);
 
   if (!product) {
@@ -35,8 +34,9 @@ export async function generateMetadata({
   };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const productId = parseInt(params.id);
+export default async function ProductPage({ params }: { params: ParamsType }) {
+  const { id } = await params;
+  const productId = parseInt(id);
 
   // 상품 ID로 상품 정보 찾기
   const product = products.find((p) => p.id === productId);

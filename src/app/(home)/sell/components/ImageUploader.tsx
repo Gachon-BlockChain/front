@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 interface ImageUploaderProps {
   images: string[];
@@ -29,10 +30,13 @@ export default function ImageUploader({
             key={idx}
             className="relative w-24 h-24 rounded border border-gray-200 overflow-hidden"
           >
-            <img
+            <Image
               src={img}
               alt={`상품 이미지 ${idx + 1}`}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="96px"
+              quality={80}
             />
           </div>
         ))}

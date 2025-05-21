@@ -1,24 +1,30 @@
 "use client";
 
-import React from "react";
-import { useSearchParams } from "next/navigation";
+import React, { Suspense } from "react";
 import StatusBar from "@/app/(home)/components/StatusBar";
 import BottomNavigation from "@/app/(home)/components/BottomNavigation";
 import TransactionHeader from "./components/TransactionHeader";
 import TransactionProductList from "./components/TransactionProductList";
 
-export default function TransactionPage() {
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type") || "purchase";
+function TransactionContainer() {
+  return (
+    <>
+      <TransactionHeader />
+      <div className="flex-1 flex flex-col pb-20">
+        <TransactionProductList />
+      </div>
+    </>
+  );
+}
 
+export default function TransactionPage() {
   return (
     <main className="flex flex-col min-h-screen">
       <StatusBar />
-      <TransactionHeader />
 
-      <div className="flex-1 flex flex-col pb-20">
-        <TransactionProductList type={type === "sale" ? "sale" : "purchase"} />
-      </div>
+      <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
+        <TransactionContainer />
+      </Suspense>
 
       <BottomNavigation />
     </main>
