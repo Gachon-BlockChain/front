@@ -4,11 +4,14 @@ import { useState } from "react";
 import Layout from "@/components/Layout";
 import GifticonCard from "@/components/GifticonCard";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const categories = ["전체", "식품", "상품권", "가구", "카페", "편의점", "패션", "기타"];
 
 const dummyData = [
   {
+    id: "1",
     title: "스타벅스 아메리카노",
     category: "카페",
     price: 0.01,
@@ -18,6 +21,7 @@ const dummyData = [
     imageUrl: "/images/barcode.svg",
   },
   {
+    id: "2",
     title: "GS25 모바일 상품권",
     category: "편의점",
     price: 0.02,
@@ -27,6 +31,7 @@ const dummyData = [
     imageUrl: "/images/barcode.svg",
   },
   {
+    id: "3",
     title: "이케아 테이블 쿠폰",
     category: "가구",
     price: 0.03,
@@ -36,6 +41,7 @@ const dummyData = [
     imageUrl: "/images/barcode.svg",
   },
   {
+    id: "4",
     title: "CU 1만원 상품권",
     category: "상품권",
     price: 0.015,
@@ -45,6 +51,7 @@ const dummyData = [
     imageUrl: "/images/barcode.svg",
   },
   {
+    id: "5",
     title: "맥도날드 불고기버거 세트",
     category: "식품",
     price: 0.013,
@@ -54,6 +61,7 @@ const dummyData = [
     imageUrl: "/images/barcode.svg",
   },
   {
+    id: "6",
     title: "유니클로 2만원 쿠폰",
     category: "패션",
     price: 0.025,
@@ -65,6 +73,16 @@ const dummyData = [
 ];
 
 export default function HomePage() {
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn) {
+      router.replace("/login");
+    }
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState("전체");
 
   const filtered = selectedCategory === "전체"
@@ -110,8 +128,17 @@ export default function HomePage() {
 
       {/* 상품 목록 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {filtered.map((item, idx) => (
-          <GifticonCard key={idx} {...item} />
+        {filtered.map((item) => (
+          <GifticonCard
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            price={item.price}
+            currency={item.currency}
+            imageUrl={item.imageUrl}
+            seller={item.seller}
+            expiry={item.expiry}
+          />
         ))}
       </div>
     </Layout>

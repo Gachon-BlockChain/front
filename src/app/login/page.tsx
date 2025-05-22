@@ -7,7 +7,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLogin = () => {
-    // 나중에 메타마스크 등과 연동 예정
+    sessionStorage.setItem("isLoggedIn", "true");
     router.push("/");
   };
 

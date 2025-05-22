@@ -41,7 +41,7 @@ export default function OnSalePage() {
       <table className="w-full text-sm border">
         <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-2 border-b">바코드</th>
+            <th className="p-2 border-b">바코드 번호</th>
             <th className="p-2 border-b">등록일자</th>
             <th className="p-2 border-b">금액</th>
             <th className="p-2 border-b">판매취소</th>

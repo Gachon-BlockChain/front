@@ -33,14 +33,14 @@ export default function SellPage() {
       <h1 className="text-2xl font-bold mb-6">기프티콘 상품 등록</h1>
       <form
         onSubmit={handleSubmit}
-        className="max-w-xl space-y-4 bg-white p-6 rounded shadow"
+        className="max-w-xl space-y-4 bg-white p-6 border rounded shadow"
       >
         {/* 상품 바코드 */}
         <div>
-          <label className="block mb-1 font-medium">상품 바코드</label>
+          <label className="block mb-1 font-medium text-black">상품 바코드 번호</label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-black rounded px-3 py-2 text-black bg-white"
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
             required
@@ -49,10 +49,10 @@ export default function SellPage() {
 
         {/* 상품명 */}
         <div>
-          <label className="block mb-1 font-medium">상품명</label>
+          <label className="block mb-1 font-medium text-black">상품명</label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-black rounded px-3 py-2 text-black bg-white"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -61,10 +61,10 @@ export default function SellPage() {
 
         {/* 카테고리 드롭다운 */}
         <div>
-          <label className="block mb-1 font-medium">카테고리</label>
+          <label className="block mb-1 font-medium text-black">카테고리</label>
           <div className="relative">
             <select
-              className="appearance-none w-full border rounded px-3 py-2 pr-10 bg-white"
+              className="w-full border border-black rounded px-3 py-2 text-black bg-white"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -74,26 +74,23 @@ export default function SellPage() {
                 </option>
               ))}
             </select>
-            <div className="absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none">
-              <ChevronDownIcon className="w-5 h-5 text-gray-400" />
-            </div>
           </div>
         </div>
 
         {/* 상품 금액 */}
         <div>
-          <label className="block mb-1 font-medium">상품 금액</label>
+          <label className="block mb-1 font-medium text-black">상품 금액</label>
           <div className="flex gap-2">
             <input
               type="number"
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-black rounded px-3 py-2 text-black bg-white"
               placeholder="금액 입력"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
             />
             <select
-              className="border rounded px-3 py-2"
+              className="border border-black rounded px-3 py-2 text-black bg-white"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
             >
@@ -105,10 +102,10 @@ export default function SellPage() {
 
         {/* 유효기간 */}
         <div>
-          <label className="block mb-1 font-medium">기프티콘 유효기간</label>
+          <label className="block mb-1 font-medium text-black">기프티콘 유효기간</label>
           <input
             type="date"
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-black rounded px-3 py-2 text-black bg-white"
             value={expiry}
             onChange={(e) => setExpiry(e.target.value)}
             required

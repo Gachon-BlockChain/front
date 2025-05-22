@@ -42,16 +42,11 @@ export default function PurchasedPage() {
       <table className="w-full text-sm border">
         <thead className="bg-gray-100 text-left">
           <tr>
-            <th className="p-2 border-b">바코드</th>
+            <th className="p-2 border-b">바코드 번호</th>
             <th className="p-2 border-b">구매일자</th>
             <th className="p-2 border-b">금액</th>
             <th className="p-2 border-b">상세내역</th>
             <th className="p-2 border-b text-center">신고</th>
-            <td className="p-2 text-center">
-              <button className="text-red-500 hover:underline">
-                🚨
-              </button>
-            </td>
           </tr>
         </thead>
         <tbody>
@@ -68,6 +63,11 @@ export default function PurchasedPage() {
                   className="text-blue-600 hover:underline"
                 >
                   상세내역
+                </button>
+              </td>
+              <td className="p-2 text-center">
+                <button className="text-red-500 hover:underline">
+                  신고🚨
                 </button>
               </td>
             </tr>
@@ -92,12 +92,14 @@ export default function PurchasedPage() {
               기프티콘 교환
             </button>
           </div>
-          <button
-            onClick={() => setSelected(null)}
-            className="mt-3 px-4 py-1 bg-gray-300 text-sm rounded hover:bg-gray-400"
-          >
-            닫기
-          </button>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setSelected(null)}
+              className="px-4 py-1 bg-gray-300 text-sm rounded hover:bg-gray-400"
+            >
+              닫기
+            </button>
+          </div>
         </div>
       )}
     </Layout>
