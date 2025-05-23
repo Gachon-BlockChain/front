@@ -7,9 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FormEvent } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   onLogin?: () => void;
@@ -25,54 +25,43 @@ export function LoginForm({ className, onLogin, ...props }: LoginFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">로그인</CardTitle>
+      <Card className="px-4 py-6">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-4 w-24 h-24 relative">
+            <Image
+              src="/MetaMask/MetaMask/MetaMask-icon-fox.svg"
+              alt="MetaMask Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <CardTitle className="text-2xl mb-1">로그인</CardTitle>
           <CardDescription>
-            이메일을 입력하여 계정에 로그인하세요
+            메타마스크를 통해 계정에 로그인하세요
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+          <form onSubmit={handleSubmit} className="flex flex-col items-center">
+            <div className="flex flex-col gap-6 w-auto">
+              <Button
+                type="submit"
+                className="mx-auto px-8 bg-white text-[#F6851B] border border-[#F6851B] hover:bg-[#F6851B] hover:text-white flex items-center justify-center gap-2 transition-colors"
+              >
+                <Image
+                  src="/MetaMask/MetaMask/MetaMask-icon-fox.svg"
+                  alt="MetaMask Icon"
+                  width={24}
+                  height={24}
+                  className="object-contain"
                 />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">비밀번호</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    비밀번호를 잊으셨나요?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Button
-                  type="submit"
-                  className="w-full bg-[#366CFF] hover:bg-[#2A56D1]"
-                >
-                  로그인
-                </Button>
-                <Button variant="outline" className="w-full" type="button">
-                  메타마스크로 로그인
-                </Button>
-              </div>
+                메타마스크로 로그인
+              </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               계정이 없으신가요?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <Link href="/signup" className="underline underline-offset-4">
                 회원가입
-              </a>
+              </Link>
             </div>
           </form>
         </CardContent>
