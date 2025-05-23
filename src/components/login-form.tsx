@@ -61,10 +61,10 @@ export function LoginForm({ className, onLogin, ...props }: LoginFormProps) {
                   type="submit"
                   className="w-full bg-[#366CFF] hover:bg-[#2A56D1]"
                 >
-                  Login
+                  로그인
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
-                  Login with MetaMask
+                  메타마스크로 로그인
                 </Button>
               </div>
             </div>
