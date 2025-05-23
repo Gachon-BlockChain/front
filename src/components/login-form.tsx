@@ -45,7 +45,7 @@ export function LoginForm({ className, onLogin, ...props }: LoginFormProps) {
             <div className="flex flex-col gap-6 w-auto">
               <Button
                 type="submit"
-                className="mx-auto px-8 bg-white text-[#F6851B] border border-[#F6851B] hover:bg-[#F6851B] hover:text-white flex items-center justify-center gap-2 transition-colors"
+                className="mx-auto px-8 bg-white text-[#F6851B] border border-[#F6851B] hover:bg-[#F6851B] hover:text-white active:bg-[#F6851B] active:text-white active:scale-95 focus:bg-[#F6851B] focus:text-white touch-action-manipulation active-scale active-bg-orange flex items-center justify-center gap-2 transition-all"
               >
                 <Image
                   src="/MetaMask/MetaMask/MetaMask-icon-fox.svg"

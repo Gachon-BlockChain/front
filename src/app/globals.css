@@ -132,6 +132,24 @@
       system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
       "Noto Sans KR", "Malgun Gothic", sans-serif !important;
   }
+
+  /* 모바일 터치 경험 개선 */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* 모바일에서 active 상태 적용을 위한 스타일 */
+  @media (max-width: 768px) {
+    .active-scale:active {
+      transform: scale(0.98);
+    }
+
+    .active-bg-orange:active {
+      background-color: #f6851b !important;
+      color: white !important;
+    }
+  }
 }
 
 /* 전역 폰트 강제 적용 */
