@@ -13,12 +13,6 @@ export default function Page() {
 
   return (
     <>
-      <style jsx global>{`
-        button {
-          -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;
-        }
-      `}</style>
       <div className="flex min-h-svh w-full flex-col items-center justify-center bg-gray-50 p-6 md:p-10">
         <div className="w-full max-w-sm">
           <LoginForm onLogin={handleLogin} />
