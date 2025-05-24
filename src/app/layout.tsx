@@ -23,13 +23,23 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<AppkitContextProvider cookies={null}>{children}</AppkitContextProvider>
-			</body>
-		</html>
-	);
+
+  return (
+    <html lang="ko" className="font-pretendard">
+      <head>
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin=""
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css"
+        />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-pretendard antialiased`}
+        style={{ fontFamily: "'Pretendard Variable', sans-serif" }}
+      >
+        <AppkitContextProvider cookies={null}>{children}</AppkitContextProvider>
+      </body>
+    </html>
+  );
 }

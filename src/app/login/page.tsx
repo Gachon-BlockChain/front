@@ -1,10 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import Layout from '@/components/Layout';
-import { useAppKit } from '@reown/appkit/react';
-import { useAccount } from 'wagmi';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAccount } from 'wagmi';
+import { useAppKit } from '@reown/appkit/react';
+        
+import Layout from '@/components/Layout';
+import { LoginForm } from "@/components/login-form";
+
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -22,17 +25,28 @@ export default function LoginPage() {
 		open(); // Web3Modal 열기
 	};
 
-	return (
-		<Layout>
-			<div className="flex flex-col items-center justify-center h-[70vh] text-center">
-				<h1 className="text-2xl font-bold mb-4">로그인이 필요합니다</h1>
-				<button
-					onClick={handleLogin}
-					className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-				>
-					로그인
-				</button>
-			</div>
-		</Layout>
+	return (    
+    <>
+      <div className="flex min-h-svh w-full flex-col items-center justify-center bg-gray-50 p-6 md:p-10">
+        <div className="w-full max-w-sm">
+          <LoginForm onLogin={handleLogin} />
+        </div>
+        <div className="mt-6 text-center text-sm text-gray-500">
+          <p>메타마스크 지갑을 사용하여 안전하게 로그인하세요.</p>
+          <p>
+            지갑이 없으시다면{" "}
+            <a
+              href="https://metamask.io/download/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              여기
+            </a>
+            에서 다운로드 할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </>
 	);
 }
