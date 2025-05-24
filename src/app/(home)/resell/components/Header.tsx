@@ -10,7 +10,7 @@ export default function Header() {
   const router = useRouter(); // ✅ 라우터 인스턴스
 
   const handleSubmit = () => {
-    router.push("/resell"); // ✅ 버튼 누르면 이동
+    router.push("/sell"); // ✅ 버튼 누르면 이동
   };
 
   return (
@@ -20,7 +20,7 @@ export default function Header() {
         <Link href="/" className="mr-4">
           <ChevronLeft size={24} />
         </Link>
-        <h1 className="text-xl font-bold">상품 등록</h1>
+        <h1 className="text-xl font-bold">상품 재등록</h1>
       </div>
 
       {/* 오른쪽: 등록하기 버튼 */}
@@ -28,7 +28,7 @@ export default function Header() {
         className="bg-blue-500 hover:bg-blue-600"
         onClick={handleSubmit}
       >
-        재등록하기
+        새로 등록하기
       </Button>
     </div>
   );
