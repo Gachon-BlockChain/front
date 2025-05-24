@@ -1,17 +1,4 @@
-export type CategoryName =
-  | "전체"
-  | "편의점"
-  | "카페"
-  | "패스트푸드"
-  | "베이커리";
-
-export const CATEGORY_LIST: CategoryName[] = [
-  "전체",
-  "편의점",
-  "카페",
-  "패스트푸드",
-  "베이커리",
-];
+import { CategoryName } from "./category";
 
 export type GifticonStatus = "Listed" | "Redeemed" | "Penalized";
 
@@ -32,6 +19,19 @@ export interface GifticonItem {
   description?: string;
   image: string;
   categoryName: CategoryName;
+}
+
+export interface GifticonFormParams {
+  expiryDate: number;
+
+  // Marketplace
+  price: number;
+
+  // IFPS 메타데이터
+  productName: string;
+  description?: string;
+  categoryName: CategoryName;
+  image: File;
 }
 
 // 변환 함수

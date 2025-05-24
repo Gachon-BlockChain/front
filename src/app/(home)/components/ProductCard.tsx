@@ -13,7 +13,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     <Link href={`/product/${product.tokenId}`} className="flex gap-4">
       <div className="flex-shrink-0 relative w-[110px] h-[110px] border rounded overflow-hidden">
         <Image
-          src={product.image[0]}
+          src={product.image}
           alt={product.productName}
           fill
           className="object-cover"

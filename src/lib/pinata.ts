@@ -7,6 +7,7 @@ interface UploadResult {
   success: boolean;
   pinataURL?: string;
   message?: string;
+  ipfsHash?: string; 
 }
 
 function isError(err: unknown): err is Error {
@@ -28,6 +29,7 @@ export const uploadJSONToIPFS = async (
 
     return {
       success: true,
+      ipfsHash: response.data.IpfsHash,
       pinataURL: `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`,
     };
   } catch (error) {
@@ -78,6 +80,7 @@ export const uploadFileToIPFS = async (file: File): Promise<UploadResult> => {
 
     return {
       success: true,
+      ipfsHash: response.data.IpfsHash, // ✅ 이 줄이 중요!
       pinataURL: `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`,
     };
   } catch (error) {

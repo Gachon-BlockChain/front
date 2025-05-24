@@ -5,7 +5,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { CATEGORY_LIST, CategoryName } from '@/types/gifticon';
+import { CATEGORY_LIST, CategoryName } from '@/types';
 import React from 'react';
 
 interface CategoryBarProps {
