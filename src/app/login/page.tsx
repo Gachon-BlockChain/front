@@ -1,17 +1,31 @@
-"use client";
+'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAccount } from 'wagmi';
+import { useAppKit } from '@reown/appkit/react';
+        
+import Layout from '@/components/Layout';
 import { LoginForm } from "@/components/login-form";
-import { useRouter } from "next/navigation";
 
-export default function Page() {
-  const router = useRouter();
 
-  const handleLogin = () => {
-    // 메타마스크 인증 연동 예정
-    router.push("/");
-  };
+export default function LoginPage() {
+	const router = useRouter();
+	const { open } = useAppKit(); // ✅ Web3Modal을 열기 위한 open() 메서드
+	const { isConnected, address } = useAccount(); // ✅ 지갑 연결 상태 확인
 
-  return (
+	// ✅ 로그인 상태가 되면 자동으로 홈으로 이동
+	useEffect(() => {
+		if (isConnected && address) {
+			router.push('/');
+		}
+	}, [isConnected, address, router]);
+
+	const handleLogin = () => {
+		open(); // Web3Modal 열기
+	};
+
+	return (    
     <>
       <div className="flex min-h-svh w-full flex-col items-center justify-center bg-gray-50 p-6 md:p-10">
         <div className="w-full max-w-sm">
@@ -34,5 +48,5 @@ export default function Page() {
         </div>
       </div>
     </>
-  );
+	);
 }
