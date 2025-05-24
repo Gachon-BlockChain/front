@@ -7,12 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatPrice(price: number): string {
   return (
-    new Intl.NumberFormat("ko-KR", {
-      style: "currency",
-      currency: "KRW",
-      currencyDisplay: "symbol",
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     })
-      .format(price)
-      .replace("₩", "") + "원"
+      .format(price) + " POL"
   );
 }

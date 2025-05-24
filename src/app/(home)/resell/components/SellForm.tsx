@@ -53,14 +53,17 @@ export default function SellForm() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
-					{/* 이미지 업로드 */}
-					<ImageUploader
-						imagePreviews={imagePreviews}
-						setImagePreviews={setImagePreviews}
-						setImages={(file) =>
-							setFormData((prev) => ({ ...prev, image: file }))
-						}
-					/>
+					{/* NFT 생성 */}
+					<div className="space-y-2">
+						<Button
+							id="title"
+							className="w-full bg-green-500 hover:bg-green-600 text-white"
+							type="button"
+							// onClick={() => {}} // 기능 없음
+						>
+							NFT 갖고오기
+						</Button>
+					</div>
 
 					{/* 상품명 */}
 					<div className="space-y-2">
@@ -127,18 +130,6 @@ export default function SellForm() {
 						</div>
 					</div>
 
-
-					{/* NFT 생성 */}
-					<div className="space-y-2">
-						<Button
-							id="title"
-							className="w-full bg-green-500 hover:bg-green-600 text-white"
-							type="button"
-							// onClick={() => {}} // 기능 없음
-						>
-							NFT 생성
-						</Button>
-					</div>
 				</CardContent>
 				<CardFooter className="flex flex-col items-start space-y-4">
 					<PriceNotice price={formData.price.toString()} />

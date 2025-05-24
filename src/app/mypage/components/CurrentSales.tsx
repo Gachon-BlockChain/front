@@ -8,21 +8,21 @@ const mockProducts = [
   {
     id: 1,
     title: "스타벅스 아메리카노 Tall",
-    price: 4500,
+    price: 3.8,
     expiryDate: "2024-12-31",
     imageUrl: "/images/sample/starbucks.jpg",
   },
   {
     id: 2,
     title: "배스킨라빈스 싱글레귤러",
-    price: 3500,
+    price: 2.9,
     expiryDate: "2024-11-15",
     imageUrl: "/images/sample/baskin.jpg",
   },
   {
     id: 3,
     title: "CGV 영화 관람권",
-    price: 11000,
+    price: 9.1,
     expiryDate: "2025-01-20",
     imageUrl: "/images/sample/cu.jpg",
   },
@@ -65,7 +65,7 @@ export default function CurrentSales() {
                   유효기간: {product.expiryDate}
                 </p>
                 <p className="font-semibold mt-1">
-                  {product.price.toLocaleString()}원
+                  {product.price.toLocaleString()} POL
                 </p>
               </div>
             </Link>
