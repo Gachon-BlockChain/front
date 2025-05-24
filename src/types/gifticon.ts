@@ -50,7 +50,7 @@ export const convertToGifticonItem = (
     ] as GifticonStatus,
     burnTimestamp: Number(onchainData.burnTimestamp),
 
-    price: listing.price,
+    price: Number(listing.price) / 1e18,
     seller: listing.seller,
 
     productName: metadata.productName,
