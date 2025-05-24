@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar } from '@/components/ui/calendar';
 import {
 	Card,
 	CardContent,
@@ -20,14 +19,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import ImageUploader from './ImageUploader';
+
 import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, CategoryName, GifticonFormParams } from '@/types';
 import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 
 export default function SellForm() {
-	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 	const { listNFT, isLoading } = useItems();
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
@@ -47,9 +45,9 @@ export default function SellForm() {
 			{isLoading && <LoadingOverlay />}
 			<Card className="w-full">
 				<CardHeader>
-					<CardTitle>기프티콘 정보</CardTitle>
+					<CardTitle>기프티콘NFT 정보</CardTitle>
 					<CardDescription>
-						판매할 기프티콘의 정보를 입력해주세요.
+						판매할 기프티콘NFT의 정보를 입력해주세요.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
@@ -61,7 +59,7 @@ export default function SellForm() {
 							type="button"
 							// onClick={() => {}} // 기능 없음
 						>
-							NFT 갖고오기
+							NFT 가져오기
 						</Button>
 					</div>
 

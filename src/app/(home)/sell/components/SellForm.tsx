@@ -127,17 +127,24 @@ export default function SellForm() {
 						</div>
 					</div>
 
-
-					{/* NFT 생성 */}
+					{/* 유효기간 */}
 					<div className="space-y-2">
-						<Button
-							id="title"
-							className="w-full bg-green-500 hover:bg-green-600 text-white"
-							type="button"
-							// onClick={() => {}} // 기능 없음
-						>
-							NFT 생성
-						</Button>
+						<Label>유효기간</Label>
+						<div className="border rounded-md p-2">
+							<Calendar
+								mode="single"
+								selected={new Date(formData.expiryDate * 1000)}
+								disabled={(date) => date < new Date()}
+								className="rounded-md border"
+								onSelect={(date) =>
+									date &&
+									setFormData((prev) => ({
+										...prev,
+										expiryDate: Math.floor(date.getTime() / 1000),
+									}))
+								}
+							/>
+						</div>
 					</div>
 				</CardContent>
 				<CardFooter className="flex flex-col items-start space-y-4">
