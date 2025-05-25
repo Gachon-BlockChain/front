@@ -28,7 +28,7 @@ import LoadingOverlay from '@/components/ui/loadingSpinner';
 
 export default function SellForm() {
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-	const { listNFT, isLoading } = useItems();
+	const { listNewNFT, isLoading } = useItems();
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
 		productName: '',
@@ -39,7 +39,7 @@ export default function SellForm() {
 	});
 
 	const handleSubmit = async () => {
-		await listNFT(formData);
+		await listNewNFT(formData);
 	};
 
 	return (
@@ -111,6 +111,8 @@ export default function SellForm() {
 							<Input
 								id="price"
 								type="number"
+								step="any"
+								min="0"
 								placeholder="판매 가격을 입력하세요"
 								className="pr-14"
 								value={formData.price}
