@@ -6,8 +6,11 @@ import {
 	CategoryName,
 	ContractContext,
 	convertToGifticonItem,
+	convertToGifticonNFT,
 	GifticonFormParams,
 	GifticonItem,
+	GifticonNFT,
+	GifticonNFTParams,
 } from '@/types';
 import {
 	fetchMetadataFromIPFS,
@@ -39,7 +42,7 @@ export default function useItems() {
 					provider
 				);
 
-				const tokenIds: number[] = await marketplaceContract.getListings();
+				const tokenIds: bigint[] = await marketplaceContract.getListings();
 				console.log('Token IDs:', tokenIds);
 				const itemPromises = tokenIds.map(async (tokenId) => {
 					const item = await nftContract.gifticons(tokenId); // IGifticonNFT 호출
@@ -68,7 +71,46 @@ export default function useItems() {
 		[]
 	);
 
-	const listNFT = async (formParams: GifticonFormParams): Promise<boolean> => {
+	const fetchMyNFTs = async (): Promise<GifticonNFT[]> => {
+		setIsLoading(true);
+		try {
+			const provider = new ethers.BrowserProvider(window.ethereum as any);
+			const signer = await provider.getSigner();
+			const address = await signer.getAddress();
+
+			const nftContract = new Contract(
+				GIFTICON_NFT_ADDRESS,
+				GifticonNFTABI.abi,
+				signer
+			);
+
+			const result = await nftContract.gifticonsWithIdOfOwner(address);
+			console.log('My NFTs:', result);
+
+			const myNFTs = await Promise.all(
+				result.map(async (entry: { tokenId: bigint; gifticon: any }) => {
+					const tokenURI: string = await nftContract.tokenURI(entry.tokenId);
+					const metadata = await fetchMetadataFromIPFS(tokenURI);
+
+					return convertToGifticonNFT(entry.tokenId, entry.gifticon, metadata);
+				})
+			);
+			console.log('My NFTs after conversion:', myNFTs);
+
+			toast.success('NFT 등록 성공');
+			return myNFTs;
+		} catch (error) {
+			console.error('Error fetching my NFTs:', error);
+			toast.error('내 NFT를 가져오는 중 문제가 발생했습니다.');
+			return [];
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const listNewNFT = async (
+		formParams: GifticonFormParams
+	): Promise<boolean> => {
 		setIsLoading(true);
 		try {
 			// 1. 이미지 업로드
@@ -112,6 +154,7 @@ export default function useItems() {
 				ipfsHash,
 				tokenURI,
 				formParams.expiryDate,
+				formParams.price,
 				context
 			);
 			console.log('Token ID:', tokenId);
@@ -129,7 +172,46 @@ export default function useItems() {
 		}
 	};
 
-	return { isLoading, fetchItems, listNFT };
+	const listNFT = async (formParams: GifticonNFTParams): Promise<boolean> => {
+		setIsLoading(true);
+		try {
+			const provider = new ethers.BrowserProvider(window.ethereum as any);
+			const signer = await provider.getSigner();
+			const nftContract = new Contract(
+				GIFTICON_NFT_ADDRESS,
+				GifticonNFTABI.abi,
+				signer
+			);
+			const marketplaceContract = new Contract(
+				MARKETPLACE_ADDRESS,
+				MarketplaceABI.abi,
+				signer
+			);
+
+			const context: ContractContext = {
+				provider,
+				signer,
+				nftContract,
+				marketplaceContract,
+			};
+
+			const tokenId = formParams.tokenId;
+			console.log('Token ID:', tokenId);
+
+			await registerNFTForSale(tokenId, formParams.price, context);
+
+			toast.success('NFT 등록 성공');
+			return true;
+		} catch (err: any) {
+			console.error(err);
+			toast.error(err.message || 'NFT 등록 실패');
+			return false;
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return { isLoading, fetchItems, fetchMyNFTs, listNewNFT, listNFT };
 }
 
 async function uploadMetadataToIPFS(
@@ -164,11 +246,11 @@ async function registerGifticonOnChain(
 	ipfsHash: string,
 	tokenURI: string,
 	expiryDate: number,
+	depositAmount: number,
 	context: ContractContext
 ): Promise<bigint> {
-	// DEPOSIT_AMOUNT는 0.1 ETH
-	const DEPOSIT_AMOUNT = ethers.parseEther('0.1');
 	const { nftContract } = context;
+	const depositInEther = parseUnits(depositAmount.toString(), 'ether');
 
 	// 🔍 실행 전 callStatic으로 시뮬레이션 (실제 트랜잭션 전)
 	try {
@@ -176,7 +258,8 @@ async function registerGifticonOnChain(
 			ipfsHash,
 			tokenURI,
 			expiryDate,
-			{ value: DEPOSIT_AMOUNT }
+			depositInEther,
+			{ value: depositInEther }
 		);
 		console.log('registerGifticon staticCall: 시뮬레이션 통과 ✅');
 	} catch (err) {
@@ -188,9 +271,9 @@ async function registerGifticonOnChain(
 		ipfsHash,
 		tokenURI,
 		expiryDate,
+		depositInEther,
 		{
-			value: DEPOSIT_AMOUNT,
-			gasLimit: 3000000, // 가스 리밋 설정
+			value: depositInEther,
 		}
 	);
 	const receipt = await tx.wait();
@@ -227,9 +310,7 @@ async function registerNFTForSale(
 		toast.error('컨트랙트 실행 조건 불일치. 등록 실패');
 	}
 
-	await nftContract.approve(MARKETPLACE_ADDRESS, tokenId, {
-		gasLimit: 3000000, // 가스 리밋 설정
-	});
+	await nftContract.approve(MARKETPLACE_ADDRESS, tokenId);
 
 	const priceInEther = parseUnits(price.toString(), 'ether');
 	console.log('priceInEther:', priceInEther);
@@ -241,8 +322,6 @@ async function registerNFTForSale(
 		console.error('callStatic: 사전 실행 실패 ❌', err);
 		toast.error('컨트랙트 실행 조건 불일치. 등록 실패');
 	}
-	await marketplaceContract.listItem(tokenId, priceInEther, {
-		gasLimit: 3000000, // 가스 리밋 설정
-	});
+	await marketplaceContract.listItem(tokenId, priceInEther);
 	console.log('✅ listItem 완료');
 }

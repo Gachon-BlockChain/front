@@ -28,7 +28,7 @@ import LoadingOverlay from '@/components/ui/loadingSpinner';
 
 export default function SellForm() {
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-	const { listNFT, isLoading } = useItems();
+	const { listNewNFT, isLoading } = useItems();
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
 		productName: '',
@@ -39,7 +39,7 @@ export default function SellForm() {
 	});
 
 	const handleSubmit = async () => {
-		await listNFT(formData);
+		await listNewNFT(formData);
 	};
 
 	return (
@@ -111,6 +111,8 @@ export default function SellForm() {
 							<Input
 								id="price"
 								type="number"
+								step="any"
+								min="0"
 								placeholder="판매 가격을 입력하세요"
 								className="pr-14"
 								value={formData.price}
@@ -127,17 +129,24 @@ export default function SellForm() {
 						</div>
 					</div>
 
-
-					{/* NFT 생성 */}
+					{/* 유효기간 */}
 					<div className="space-y-2">
-						<Button
-							id="title"
-							className="w-full bg-green-500 hover:bg-green-600 text-white"
-							type="button"
-							// onClick={() => {}} // 기능 없음
-						>
-							NFT 생성
-						</Button>
+						<Label>유효기간</Label>
+						<div className="border rounded-md p-2">
+							<Calendar
+								mode="single"
+								selected={new Date(formData.expiryDate * 1000)}
+								disabled={(date) => date < new Date()}
+								className="rounded-md border"
+								onSelect={(date) =>
+									date &&
+									setFormData((prev) => ({
+										...prev,
+										expiryDate: Math.floor(date.getTime() / 1000),
+									}))
+								}
+							/>
+						</div>
 					</div>
 				</CardContent>
 				<CardFooter className="flex flex-col items-start space-y-4">

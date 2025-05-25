@@ -20,7 +20,7 @@ export default function Header() {
         <Link href="/" className="mr-4">
           <ChevronLeft size={24} />
         </Link>
-        <h1 className="text-xl font-bold">상품 등록</h1>
+        <h1 className="text-xl font-bold">신상품 등록</h1>
       </div>
 
       {/* 오른쪽: 등록하기 버튼 */}
@@ -28,7 +28,7 @@ export default function Header() {
         className="bg-blue-500 hover:bg-blue-600"
         onClick={handleSubmit}
       >
-        재등록하기
+        NFT 등록
       </Button>
     </div>
   );

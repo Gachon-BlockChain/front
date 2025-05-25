@@ -4,29 +4,30 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import CategoryBar from './CategoryBar';
 import useItems from '@/hooks/useItems'; // 직접 작성한 훅
-import { CategoryName, GifticonItem } from '@/types/gifticon';
+import { CategoryName, GifticonItem } from '@/types';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 
 export default function ProductList() {
-	const [selectedCategory, setSelectedCategory] = useState<CategoryName>('전체');
+	const [selectedCategory, setSelectedCategory] =
+		useState<CategoryName>('전체');
 	const { isLoading, fetchItems } = useItems(); // 직접 작성한 훅 사용
 	const [items, setItems] = useState<GifticonItem[]>([]);
 
 	useEffect(() => {
-    const loadItems = async () => {
-      const items = await fetchItems({
-        categoryName: selectedCategory,
-      });
-      setItems(items);
-    };
+		const loadItems = async () => {
+			const items = await fetchItems({
+				categoryName: selectedCategory,
+			});
+			setItems(items);
+		};
 
-    loadItems();
-  }, [selectedCategory, fetchItems]);
+		loadItems();
+	}, [selectedCategory, fetchItems]);
 
 	return (
 		<>
-      {isLoading && <LoadingOverlay />}
-      {/* 카테고리 바 */}
+			{isLoading && <LoadingOverlay />}
+			{/* 카테고리 바 */}
 			<CategoryBar
 				selectedCategory={selectedCategory}
 				onCategoryChange={setSelectedCategory}
