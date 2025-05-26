@@ -97,6 +97,14 @@ export default function useItems() {
 			);
 			console.log('My NFTs after conversion:', myNFTs);
 
+			myNFTs.forEach((nft) => {
+				if (!nft.image || typeof nft.image !== "string" || nft.image.length < 5) {
+					console.warn(`⚠️ 잘못된 이미지 경로: tokenId=${nft.tokenId}, image=${nft.image}`);
+				} else {
+					console.log(`✅ NFT tokenId=${nft.tokenId}, image=${nft.image}`);
+				}
+			});
+
 			toast.success('NFT 등록 성공');
 			return myNFTs;
 		} catch (error) {

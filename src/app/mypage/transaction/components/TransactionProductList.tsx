@@ -18,6 +18,9 @@ export default function TransactionProductList() {
   useEffect(() => {
     const fetch = async () => {
       const result = await fetchMyNFTs();
+      result.forEach((nft) =>
+        console.log(`🎯 tokenId=${nft.tokenId}, status=${nft.status}`)
+      );
       setMyNFTs(result);
     };
     fetch();

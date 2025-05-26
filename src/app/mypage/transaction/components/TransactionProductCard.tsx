@@ -20,18 +20,31 @@ export default function TransactionProductCard({
     Penalized: "취소",
   } as const;
 
+  // 👇 이미지 경로 정리
+  const imageUrl = Array.isArray(nft.image) ? nft.image[0] : nft.image;
+  const isSVG = typeof imageUrl === "string" && imageUrl.endsWith(".svg");
+
   return (
     <div className="flex flex-col gap-2">
       <Link href={`/product/${nft.tokenId.toString()}`} className="flex gap-4">
         <div className="flex-shrink-0 relative w-[110px] h-[110px] border border-black rounded overflow-hidden">
-          <Image
-            src={nft.image[0]}
-            alt={nft.productName}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 110px, 110px"
-            quality={80}
-          />
+          {isSVG ? (
+            <img
+              src={imageUrl}
+              alt={nft.productName}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <Image
+              src={imageUrl}
+              alt={nft.productName}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 110px, 110px"
+              quality={80}
+            />
+          )}
+          
           <div
             className={`absolute top-0 left-0 px-2 py-1 text-xs text-white ${
               nft.status === "Listed"

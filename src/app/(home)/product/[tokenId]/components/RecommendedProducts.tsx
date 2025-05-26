@@ -1,16 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from "./types";
+import { GifticonNFT } from "@/types";
 import { formatPrice } from "@/lib/utils";
 
 interface RecommendedProductsProps {
-  products: Product[];
+  products: GifticonNFT[];
 }
 
-export default function RecommendedProducts({
-  products,
-}: RecommendedProductsProps) {
+export default function RecommendedProducts({ products }: RecommendedProductsProps) {
   if (products.length === 0) return null;
 
   return (
@@ -20,22 +18,22 @@ export default function RecommendedProducts({
       <div className="flex flex-wrap gap-4">
         {products.map((product) => (
           <Link
-            href={`/product/${product.id}`}
-            key={product.id}
+            href={`/product/${product.tokenId.toString()}`}
+            key={product.tokenId.toString()}
             className="w-[calc(50%-8px)] flex flex-col gap-2"
           >
             <div className="relative w-full h-[118px] rounded overflow-hidden">
               <Image
-                src={product.image[0]}
-                alt={product.title}
+                src={Array.isArray(product.image) ? product.image[0] : product.image}
+                alt={product.productName}
                 fill
                 className="object-cover"
               />
             </div>
             <div>
-              <h4 className="text-sm line-clamp-2">{product.title}</h4>
+              <h4 className="text-sm line-clamp-2">{product.productName}</h4>
               <p className="font-bold text-[#366CFF] text-sm">
-                {formatPrice(product.price)}
+                {formatPrice(product.depositAmount)}
               </p>
             </div>
           </Link>
