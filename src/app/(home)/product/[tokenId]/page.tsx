@@ -15,7 +15,9 @@ import { GifticonNFT } from "@/types";
 export default function ProductPage() {
   const { fetchMyNFTs } = useItems();
   const params = useParams();
-  const tokenId = params.tokenId?.toString();
+
+  const tokenIdStr = params.tokenId?.toString();
+  const tokenIdBigInt = tokenIdStr ? BigInt(tokenIdStr) : null;
 
   const [nft, setNft] = useState<GifticonNFT | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function ProductPage() {
         const listed = all.filter((nft) => nft.status === "Listed");
         setNfts(listed);
 
-        const matched = listed.find((nft) => nft.tokenId.toString() === tokenId);
+        const matched = listed.find((nft) => nft.tokenId === tokenIdBigInt);
         setNft(matched ?? null);
       } catch (err) {
         console.error("🚨 NFT fetch error:", err);
@@ -37,8 +39,8 @@ export default function ProductPage() {
         setIsLoading(false);
       }
     };
-    if (tokenId) fetch();
-  }, [tokenId]);
+    if (tokenIdBigInt) fetch();
+  }, [tokenIdBigInt]);
 
   if (isLoading) return <LoadingOverlay />;
 
