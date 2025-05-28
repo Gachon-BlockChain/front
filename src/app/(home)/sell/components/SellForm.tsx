@@ -36,6 +36,7 @@ export default function SellForm() {
 		price: 0,
 		expiryDate: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
 		image: null as any, // 또는 undefined 후 타입 수정
+		description: '',
 	});
 
 	const handleSubmit = async () => {
@@ -147,6 +148,22 @@ export default function SellForm() {
 								}
 							/>
 						</div>
+					</div>
+
+					{/* 상품 설명 */}
+					<div className="space-y-2">
+						<Label htmlFor="description">상품 설명</Label>
+						<Input
+						id="description"
+						placeholder="상품에 대한 설명을 입력하세요"
+						value={formData.description}
+						onChange={(e) =>
+							setFormData((prev) => ({
+							...prev,
+							description: e.target.value,
+							}))
+						}
+						/>
 					</div>
 				</CardContent>
 				<CardFooter className="flex flex-col items-start space-y-4">

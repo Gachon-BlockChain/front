@@ -2,23 +2,23 @@
 
 import React, { useState } from "react";
 import { formatPrice } from "@/lib/utils";
+import useItems from '@/hooks/useItems';
 
 interface BottomPurchaseBarProps {
   price: number;
+  tokenId: bigint;
 }
 
-export default function BottomPurchaseBar({ price }: BottomPurchaseBarProps) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function BottomPurchaseBar({ price, tokenId }: BottomPurchaseBarProps) {
+  const { buyNFT, isLoading } = useItems();
 
-  const handlePurchase = () => {
-    setIsLoading(true);
+  const handlePurchase = async () => {
 
-    // 구매 처리 시뮬레이션 (실제로는 API 호출 등이 들어갈 것)
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("구매 기능은 아직 준비 중입니다.");
-    }, 1000);
-  };
+    const success = await buyNFT(tokenId, price);
+    if (!success) {
+      console.warn("구매 실패 또는 취소됨");
+    }
+  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">

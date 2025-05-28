@@ -109,7 +109,7 @@ export default function SellForm() {
 										</div>
 
 										<div>상품명: {nft.productName}</div>
-										<div>담보: {nft.depositAmount}</div>
+										<div>담보: {nft.depositAmount} POL</div>
 									</CardContent>
 								</Card>
 							))}
@@ -188,6 +188,21 @@ export default function SellForm() {
 										}
 									/>
 								</div>
+							</div>
+							{/* 상품 설명 */}
+							<div className="space-y-2">
+								<Label htmlFor="description">상품 설명</Label>
+								<Input
+								id="description"
+								placeholder="상품에 대한 설명을 입력하세요"
+								value={formData.description}
+								onChange={(e) =>
+									setFormData((prev) => ({
+									...prev,
+									description: e.target.value,
+									}))
+								}
+								/>
 							</div>
 						</>
 					)}
