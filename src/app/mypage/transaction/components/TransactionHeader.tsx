@@ -33,11 +33,11 @@ export default function TransactionHeader() {
       </div>
 
       <Select defaultValue={type} onValueChange={handleTypeChange}>
-        <SelectTrigger className="w-[120px]">
+        <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="유형 선택" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="purchase">구매 내역</SelectItem>
+          <SelectItem value="purchase">보유 중인 NFT 내역</SelectItem>
           <SelectItem value="sale">판매 내역</SelectItem>
         </SelectContent>
       </Select>
