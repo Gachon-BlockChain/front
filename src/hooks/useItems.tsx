@@ -42,6 +42,8 @@ export default function useItems() {
 					provider
 				);
 
+				console.log(marketplaceContract);
+				console.log(nftContract)
 				const tokenIds: bigint[] = await marketplaceContract.getListings();
 				console.log('Token IDs:', tokenIds);
 				const itemPromises = tokenIds.map(async (tokenId) => {

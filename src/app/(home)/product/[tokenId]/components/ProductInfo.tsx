@@ -1,9 +1,9 @@
 import React from "react";
-import { GifticonNFT } from "@/types"; // ✅ 실제 NFT 타입
+import { GifticonItem } from "@/types"; // ✅ 실제 NFT 타입
 import { formatPrice } from "@/lib/utils";
 
 interface ProductInfoProps {
-  product: GifticonNFT;
+  product: GifticonItem;
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
@@ -33,7 +33,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         <div className="flex gap-1 text-xs text-gray-500 mb-3">
           <span>{product.categoryName}</span>
           <span>·</span>
-          <span>{formatPrice(product.depositAmount)}</span>
+          <span>{formatPrice(product.price)}</span>
           <span>·</span>
           <span>
             유효기간{" "}
