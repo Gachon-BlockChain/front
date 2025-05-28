@@ -79,7 +79,7 @@ export default function ProductPage() {
         <RecommendedProducts products={recommendedProducts} />
       )}
 
-      <BottomPurchaseBar price={nft.depositAmount} />
+      <BottomPurchaseBar price={nft.depositAmount} tokenId={nft.tokenId} />
     </main>
   );
 }
