@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import EncryptTest from './encryptiontest';
 import { Calendar } from '@/components/ui/calendar';
 import {
 	Card,
@@ -159,6 +160,7 @@ export default function SellForm() {
 					</Button>
 				</CardFooter>
 			</Card>
+			<EncryptTest />
 		</>
 	);
 }
