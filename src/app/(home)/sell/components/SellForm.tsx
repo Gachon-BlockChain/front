@@ -25,9 +25,16 @@ import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, CategoryName, GifticonFormParams } from '@/types';
 import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function SellForm() {
+	const router = useRouter();
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+	const [encryptImagePreviews, setEncryptImagePreviews] = useState<string[]>(
+		[]
+	);
+
 	const { listNewNFT, isLoading } = useItems();
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
@@ -36,11 +43,25 @@ export default function SellForm() {
 		price: 0,
 		expiryDate: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
 		image: null as any, // 또는 undefined 후 타입 수정
+		encryptImage: null as any, // 또는 undefined 후 타입 수정
 		description: '',
 	});
 
 	const handleSubmit = async () => {
-		await listNewNFT(formData);
+		if (!formData) {
+			toast.error('모든 필드를 채워주세요.');
+			return;
+		}
+		try {
+			await listNewNFT(formData);
+
+			toast.success('기프티콘이 성공적으로 등록되었습니다.');
+			router.push('/');
+		} catch (error) {
+			toast.error('기프티콘 등록에 실패했습니다. 다시 시도해주세요.');
+			console.error('Error listing NFT:', error);
+			return;
+		}
 	};
 
 	return (
@@ -54,7 +75,7 @@ export default function SellForm() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
-					{/* 이미지 업로드 */}
+					{/* 공개 이미지 업로드 */}
 					<ImageUploader
 						imagePreviews={imagePreviews}
 						setImagePreviews={setImagePreviews}
@@ -62,7 +83,15 @@ export default function SellForm() {
 							setFormData((prev) => ({ ...prev, image: file }))
 						}
 					/>
-
+					{/* 비공개 이미지(바코드) 업로드 */}
+					<ImageUploader
+						imagePreviews={encryptImagePreviews}
+						setImagePreviews={setEncryptImagePreviews}
+						setImages={(file) =>
+							setFormData((prev) => ({ ...prev, encryptImage: file }))
+						}
+						isPublic={false}
+					/>
 					{/* 상품명 */}
 					<div className="space-y-2">
 						<Label htmlFor="title">상품명</Label>
@@ -154,15 +183,15 @@ export default function SellForm() {
 					<div className="space-y-2">
 						<Label htmlFor="description">상품 설명</Label>
 						<Input
-						id="description"
-						placeholder="상품에 대한 설명을 입력하세요"
-						value={formData.description}
-						onChange={(e) =>
-							setFormData((prev) => ({
-							...prev,
-							description: e.target.value,
-							}))
-						}
+							id="description"
+							placeholder="상품에 대한 설명을 입력하세요"
+							value={formData.description}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									description: e.target.value,
+								}))
+							}
 						/>
 					</div>
 				</CardContent>

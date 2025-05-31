@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { useCallback, useState } from 'react';
-import { Contract, ethers, JsonRpcProvider, parseUnits } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { GifticonNFTABI, MarketplaceABI } from '@/context';
 import {
 	CategoryName,
@@ -17,6 +17,7 @@ import {
 	uploadFileToIPFS,
 	uploadJSONToIPFS,
 } from '@/lib/pinata';
+import { encryptBarcode } from '@/lib/taco';
 
 const MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS ?? '';
 const GIFTICON_NFT_ADDRESS = process.env.NEXT_PUBLIC_GIFTICON_NFT_ADDRESS ?? '';
@@ -30,16 +31,18 @@ export default function useItems() {
 			setIsLoading(true);
 			try {
 				console.log('Fetching items...');
-				const provider = new JsonRpcProvider(ALCHEMY_URL);
+				const alchemyProvider = new ethers.providers.JsonRpcProvider(
+					ALCHEMY_URL
+				);
 				const marketplaceContract = new Contract(
 					MARKETPLACE_ADDRESS,
 					MarketplaceABI.abi,
-					provider
+					alchemyProvider
 				);
 				const nftContract = new Contract(
 					GIFTICON_NFT_ADDRESS,
 					GifticonNFTABI.abi,
-					provider
+					alchemyProvider
 				);
 
 				console.log(marketplaceContract);
@@ -76,7 +79,10 @@ export default function useItems() {
 	const fetchMyNFTs = async (): Promise<GifticonNFT[]> => {
 		setIsLoading(true);
 		try {
-			const provider = new ethers.BrowserProvider(window.ethereum as any);
+			const provider = new ethers.providers.Web3Provider(
+				window.ethereum as any
+			);
+
 			const signer = await provider.getSigner();
 			const address = await signer.getAddress();
 
@@ -100,8 +106,14 @@ export default function useItems() {
 			console.log('My NFTs after conversion:', myNFTs);
 
 			myNFTs.forEach((nft) => {
-				if (!nft.image || typeof nft.image !== "string" || nft.image.length < 5) {
-					console.warn(`⚠️ 잘못된 이미지 경로: tokenId=${nft.tokenId}, image=${nft.image}`);
+				if (
+					!nft.image ||
+					typeof nft.image !== 'string' ||
+					nft.image.length < 5
+				) {
+					console.warn(
+						`⚠️ 잘못된 이미지 경로: tokenId=${nft.tokenId}, image=${nft.image}`
+					);
 				} else {
 					console.log(`✅ NFT tokenId=${nft.tokenId}, image=${nft.image}`);
 				}
@@ -123,10 +135,38 @@ export default function useItems() {
 	): Promise<boolean> => {
 		setIsLoading(true);
 		try {
-			// 1. 이미지 업로드
+			const provider = new ethers.providers.Web3Provider(
+				window.ethereum as any
+			);
+
+			const signer = await provider.getSigner();
+
+			// 🔐 1. 바코드 이미지 암호화
+			const messageKit = await encryptBarcode(
+				GIFTICON_NFT_ADDRESS,
+				formParams.encryptImage,
+				signer,
+				provider
+			);
+
+			// 📦 2. 암호화된 데이터를 JSON으로 저장 → Blob → File
+			const encryptedJSON = JSON.stringify(messageKit);
+			const blob = new Blob([encryptedJSON], { type: 'application/json' });
+			const encryptedFile = new File(
+				[blob],
+				`${formParams.productName}-encrypted.json`
+			);
+
+			// 3. 암호/일반 파일 업로드
+			const encryptImageUploadResult = await uploadFileToIPFS(encryptedFile);
 			const imageUploadResult = await uploadFileToIPFS(formParams.image);
+
 			const ipfsHash = imageUploadResult.ipfsHash;
-			if (!ipfsHash || imageUploadResult.pinataURL === undefined) {
+			if (
+				!ipfsHash ||
+				imageUploadResult.pinataURL === undefined ||
+				encryptImageUploadResult.pinataURL === undefined
+			) {
 				throw new Error('이미지 업로드 실패');
 			}
 			console.log('IPFS Hash:', ipfsHash);
@@ -134,14 +174,13 @@ export default function useItems() {
 			// 2. 메타데이터 업로드
 			const tokenURI = await uploadMetadataToIPFS(
 				formParams,
-				imageUploadResult.pinataURL
+				imageUploadResult.pinataURL,
+				encryptImageUploadResult.pinataURL
 			);
 			console.log('Token URI:', tokenURI);
 			console.log('expiryDate:', formParams.expiryDate);
 
 			// 3. NFT 등록
-			const provider = new ethers.BrowserProvider(window.ethereum as any);
-			const signer = await provider.getSigner();
 			const nftContract = new Contract(
 				GIFTICON_NFT_ADDRESS,
 				GifticonNFTABI.abi,
@@ -185,7 +224,10 @@ export default function useItems() {
 	const listNFT = async (formParams: GifticonNFTParams): Promise<boolean> => {
 		setIsLoading(true);
 		try {
-			const provider = new ethers.BrowserProvider(window.ethereum as any);
+			const provider = new ethers.providers.Web3Provider(
+				window.ethereum as any
+			);
+
 			const signer = await provider.getSigner();
 			const nftContract = new Contract(
 				GIFTICON_NFT_ADDRESS,
@@ -224,10 +266,13 @@ export default function useItems() {
 	const buyNFT = async (tokenId: bigint, price: number): Promise<boolean> => {
 		setIsLoading(true);
 		try {
-			const provider = new ethers.BrowserProvider(window.ethereum as any); // 메타마스크에서 로그인 한 사람이 누군지
+			const provider = new ethers.providers.Web3Provider(
+				window.ethereum as any
+			);
+
 			const signer = await provider.getSigner(); // 메타마스크에서 로그인 한 사람이 누군지
 
-			const nftContract = new Contract(  // 기프티콘 nft라는 서버랑 연동하는 구간
+			const nftContract = new Contract( // 기프티콘 nft라는 서버랑 연동하는 구간
 				GIFTICON_NFT_ADDRESS,
 				GifticonNFTABI.abi,
 				signer
@@ -239,48 +284,50 @@ export default function useItems() {
 				signer
 			);
 
-			const context: ContractContext = { // 연결해 놓은 정보들을 context로 묶은 것
+			const context: ContractContext = {
+				// 연결해 놓은 정보들을 context로 묶은 것
 				provider,
 				signer,
 				nftContract,
 				marketplaceContract,
 			};
 
-			const priceInEther = parseUnits(price.toString(), "ether");
+			const priceInEther = ethers.utils.parseUnits(price.toString(), 'ether');
 
 			// optional: callStatic 확인
 			try {
-				await context.marketplaceContract.buyItem.staticCall(tokenId, {
+				await context.marketplaceContract.callStatic.buyItem(tokenId, {
 					value: priceInEther,
 				});
-				console.log("✅ callStatic 통과");
+				console.log('✅ callStatic 통과');
 			} catch (simError) {
-				console.error("❌ 시뮬레이션 실패", simError);
-				toast.error("컨트랙트 실행 조건을 만족하지 않습니다.");
+				console.error('❌ 시뮬레이션 실패', simError);
+				toast.error('컨트랙트 실행 조건을 만족하지 않습니다.');
 			}
 
 			const tx = await context.marketplaceContract.buyItem(tokenId, {
 				value: priceInEther,
 			});
 			await tx.wait();
-			
-			toast.success("🎉 구매가 완료되었습니다!");
+
+			toast.success('🎉 구매가 완료되었습니다!');
 			return true;
 		} catch (error: any) {
-			console.error("🚨 구매 실패:", error);
-			toast.error("구매 중 문제가 발생했습니다.");
+			console.error('🚨 구매 실패:', error);
+			toast.error('구매 중 문제가 발생했습니다.');
 			return false;
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	return { isLoading, fetchItems, fetchMyNFTs, listNewNFT, listNFT, buyNFT, };
+	return { isLoading, fetchItems, fetchMyNFTs, listNewNFT, listNFT, buyNFT };
 }
 
 async function uploadMetadataToIPFS(
 	formParams: GifticonFormParams,
-	pinataURL: string
+	pinataURL: string,
+	encryptPinataURL: string
 ): Promise<string> {
 	if (
 		!formParams.productName ||
@@ -296,8 +343,9 @@ async function uploadMetadataToIPFS(
 		description: formParams.description,
 		categoryName: formParams.categoryName,
 		image: pinataURL,
+		encryptImage: encryptPinataURL,
 	};
-	const response = await uploadJSONToIPFS(jsonBody);
+	const response = await uploadJSONToIPFS(jsonBody, formParams.productName);
 
 	if (!response?.success) {
 		throw new Error('메타데이터 업로드 실패');
@@ -314,11 +362,14 @@ async function registerGifticonOnChain(
 	context: ContractContext
 ): Promise<bigint> {
 	const { nftContract } = context;
-	const depositInEther = parseUnits(depositAmount.toString(), 'ether');
+	const depositInEther = ethers.utils.parseUnits(
+		depositAmount.toString(),
+		'ether'
+	);
 
 	// 🔍 실행 전 callStatic으로 시뮬레이션 (실제 트랜잭션 전)
 	try {
-		await nftContract.registerGifticon.staticCall(
+		await nftContract.callStatic.registerGifticon(
 			ipfsHash,
 			tokenURI,
 			expiryDate,
@@ -367,7 +418,7 @@ async function registerNFTForSale(
 	const { nftContract, marketplaceContract } = context;
 	// 🔍 실행 전 callStatic으로 시뮬레이션 (실제 트랜잭션 전)
 	try {
-		await nftContract.approve.staticCall(MARKETPLACE_ADDRESS, tokenId);
+		await nftContract.callStatic.approve(MARKETPLACE_ADDRESS, tokenId);
 		console.log('approve callStatic: 시뮬레이션 통과 ✅');
 	} catch (err) {
 		console.error('callStatic: 사전 실행 실패 ❌', err);
@@ -376,11 +427,11 @@ async function registerNFTForSale(
 
 	await nftContract.approve(MARKETPLACE_ADDRESS, tokenId);
 
-	const priceInEther = parseUnits(price.toString(), 'ether');
+	const priceInEther = ethers.utils.parseUnits(price.toString(), 'ether');
 	console.log('priceInEther:', priceInEther);
 
 	try {
-		await marketplaceContract.listItem.staticCall(tokenId, priceInEther);
+		await marketplaceContract.callStatic.listItem(tokenId, priceInEther);
 		console.log('listItem callStatic: 시뮬레이션 통과 ✅');
 	} catch (err) {
 		console.error('callStatic: 사전 실행 실패 ❌', err);
@@ -389,4 +440,3 @@ async function registerNFTForSale(
 	await marketplaceContract.listItem(tokenId, priceInEther);
 	console.log('✅ listItem 완료');
 }
-
