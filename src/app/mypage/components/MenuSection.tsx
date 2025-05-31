@@ -38,7 +38,7 @@ export default function MenuSection() {
           <MenuItem
             href="/mypage/transaction?type=purchase"
             icon={<ShoppingBag size={20} />}
-            label="구매 내역"
+            label="보유 중인 NFT"
             count={3}
           />
           <MenuItem

@@ -23,7 +23,7 @@ export default function BottomPurchaseBar({ price, tokenId }: BottomPurchaseBarP
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
       <div className="flex justify-between items-center">
-        <div className="flex flex-col">
+        <div className="flex flex-col ml-14">
           <span className="text-sm text-gray-500">상품 가격</span>
           <span className="text-lg font-bold">{formatPrice(price)}</span>
         </div>

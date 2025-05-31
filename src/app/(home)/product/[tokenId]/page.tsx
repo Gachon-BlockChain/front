@@ -2,36 +2,34 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import useItems from "@/hooks/useItems";
+
 import ProductHeader from "@/app/(home)/product/[tokenId]/components/ProductHeader";
 import ProductImage from "@/app/(home)/product/[tokenId]/components/ProductImage";
 import ProductInfo from "@/app/(home)/product/[tokenId]/components/ProductInfo";
-import RelatedProducts from "@/app/(home)/product/[tokenId]/components/RelatedProducts";
-import RecommendedProducts from "@/app/(home)/product/[tokenId]/components/RecommendedProducts";
 import BottomPurchaseBar from "@/app/(home)/product/[tokenId]/components/BottomPurchaseBar";
 import LoadingOverlay from "@/components/ui/loadingSpinner";
-import { GifticonNFT } from "@/types";
 
-export default function ProductPage() {
-  const { fetchMyNFTs } = useItems();
+import { GifticonItem } from "@/types";
+import useItems from "@/hooks/useItems";
+
+export default function ProductPage() { //props로 해당되는 nft 페이지만 보여주기기
   const params = useParams();
+  const { fetchItems } = useItems();
 
   const tokenIdStr = params.tokenId?.toString();
   const tokenIdBigInt = tokenIdStr ? BigInt(tokenIdStr) : null;
 
-  const [nft, setNft] = useState<GifticonNFT | null>(null);
+  const [nft, setNft] = useState<GifticonItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [nfts, setNfts] = useState<GifticonNFT[]>([]);
 
   useEffect(() => {
-    const fetch = async () => {
+    const loadItem = async () => {
       try {
-        const all = await fetchMyNFTs();
-        const listed = all.filter((nft) => nft.status === "Listed");
-        setNfts(listed);
-
-        const matched = listed.find((nft) => nft.tokenId === tokenIdBigInt);
-        setNft(matched ?? null);
+        const allItems = await fetchItems({ categoryName: '전체' }); // 모든 판매중인 아이템
+        const matchedItem = allItems.find(
+          (item) => item.tokenId === tokenIdBigInt
+        );
+        setNft(matchedItem ?? null);
       } catch (err) {
         console.error("🚨 NFT fetch error:", err);
         setNft(null);
@@ -39,7 +37,7 @@ export default function ProductPage() {
         setIsLoading(false);
       }
     };
-    if (tokenIdBigInt) fetch();
+    if (tokenIdBigInt) loadItem();
   }, [tokenIdBigInt]);
 
   if (isLoading) return <LoadingOverlay />;
@@ -52,34 +50,13 @@ export default function ProductPage() {
     );
   }
 
-  // 예시: 동일 판매자의 다른 상품
-  const sellerOtherProducts = nfts
-    .filter((p) => p.originalOwner === nft.originalOwner && p.tokenId !== nft.tokenId)
-    .slice(0, 2);
-
-  // 예시: 같은 카테고리 추천 상품
-  const recommendedProducts = nfts
-    .filter((p) => p.categoryName === nft.categoryName && p.tokenId !== nft.tokenId)
-    .slice(0, 6);
-
   return (
     <main className="flex flex-col min-h-screen pb-16">
       <ProductHeader />
       <ProductImage image={Array.isArray(nft.image) ? nft.image : [nft.image]} />
       <ProductInfo product={nft} />
 
-      {sellerOtherProducts.length > 0 && (
-        <RelatedProducts
-          sellerName={nft.originalOwner}
-          products={sellerOtherProducts}
-        />
-      )}
-
-      {recommendedProducts.length > 0 && (
-        <RecommendedProducts products={recommendedProducts} />
-      )}
-
-      <BottomPurchaseBar price={nft.depositAmount} tokenId={nft.tokenId} />
+      <BottomPurchaseBar price={nft.price} tokenId={nft.tokenId} />
     </main>
   );
 }
