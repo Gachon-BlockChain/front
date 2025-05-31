@@ -28,7 +28,7 @@ export default function TransactionHeader() {
           <ChevronLeft size={24} />
         </Link>
         <h1 className="text-lg font-semibold">
-          {type === "purchase" ? "구매 내역" : "판매 내역"}
+          {type === "purchase" ? "보유 중인 NFT 내역" : "판매 내역"}
         </h1>
       </div>
 

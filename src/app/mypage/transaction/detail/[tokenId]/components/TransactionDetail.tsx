@@ -5,6 +5,7 @@ import useItems from "@/hooks/useItems";
 import { GifticonNFT, GifticonItem } from "@/types";
 import LoadingOverlay from "@/components/ui/loadingSpinner";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 
 interface Props {
@@ -17,6 +18,7 @@ export default function TransactionDetail({ id, type }: Props) {
   const [nft, setNft] = useState<GifticonNFT | null>(null);
   const [item, setItem] = useState<GifticonItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetch = async () => {
@@ -76,7 +78,7 @@ export default function TransactionDetail({ id, type }: Props) {
         <p className="text-sm text-gray-500">토큰 ID: {nft.tokenId.toString()}</p>
         <p className="text-sm text-gray-500">상태: {nft.status}</p>
         <p className="text-sm text-gray-500">
-          유형: {type === "purchase" ? "구매한 NFT" : "등록한 NFT"}
+          유형: {type === "purchase" ? "보유중인 NFT" : "판매한 NFT"}
         </p>
       </div>
 
@@ -89,6 +91,14 @@ export default function TransactionDetail({ id, type }: Props) {
             }}
           >
             NFT 복호화
+          </Button>
+          <Button
+            className="bg-blue-500 hover:bg-blue-600"
+            onClick={() => {
+              router.push(`/resell?tokenId=${nft.tokenId}`);
+            }}
+          >
+            재판매하기
           </Button>
         </div>
       )}
