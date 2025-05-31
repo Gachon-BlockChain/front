@@ -51,6 +51,7 @@ export interface GifticonFormParams {
   description?: string;
   categoryName: CategoryName;
   image: File;
+  encryptImage: File;
 }
 
 // 변환 함수

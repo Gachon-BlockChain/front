@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 import { useAppKit } from '@reown/appkit/react';
         
-import Layout from '@/components/Layout';
 import { LoginForm } from "@/components/login-form";
 
 

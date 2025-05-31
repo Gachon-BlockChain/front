@@ -6,12 +6,14 @@ interface ImageUploaderProps {
 	imagePreviews: string[];
 	setImagePreviews: (imagePreviews: string[]) => void;
 	setImages: (file: File) => void;
+	isPublic?: boolean; // 공개 여부, 기본값 true
 }
 
 export default function ImageUploader({
 	imagePreviews,
 	setImagePreviews,
 	setImages,
+	isPublic = true,
 }: ImageUploaderProps) {
 	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files.length > 0) {
@@ -25,7 +27,9 @@ export default function ImageUploader({
 
 	return (
 		<div className="space-y-2">
-			<Label htmlFor="images">상품 이미지</Label>
+			<Label htmlFor="images">
+				{isPublic ? '공개 상품 이미지' : '비공개 바코드 이미지'}
+			</Label>
 			<div className="flex flex-wrap gap-2 mb-2">
 				{imagePreviews.map((img, idx) => (
 					<div
@@ -55,7 +59,7 @@ export default function ImageUploader({
 				</label>
 			</div>
 			<p className="text-xs text-gray-500">
-				최대 5장의 이미지를 업로드할 수 있습니다.
+				이미지 1장만 업로드할 수 있습니다.
 			</p>
 		</div>
 	);
