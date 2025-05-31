@@ -7,7 +7,7 @@ interface UploadResult {
   success: boolean;
   pinataURL?: string;
   message?: string;
-  ipfsHash?: string; 
+  ipfsHash?: string;
 }
 
 function isError(err: unknown): err is Error {
@@ -15,12 +15,20 @@ function isError(err: unknown): err is Error {
 }
 
 export const uploadJSONToIPFS = async (
-  JSONBody: object
+  JSONBody: object,
+  productName: string
 ): Promise<UploadResult> => {
   const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
 
+  const body = {
+    pinataMetadata: {
+      name: `${productName}-metadata`,
+    },
+    pinataContent: JSONBody,
+  };
+
   try {
-    const response = await axios.post(url, JSONBody, {
+    const response = await axios.post(url, body, {
       headers: {
         pinata_api_key: key,
         pinata_secret_api_key: secret,
@@ -46,9 +54,10 @@ export const uploadFileToIPFS = async (file: File): Promise<UploadResult> => {
   const data = new FormData();
 
   data.append("file", file);
+  console.log("file name:", file.name);
 
   const metadata = JSON.stringify({
-    name: "testname",
+    name: file.name,
     keyvalues: {
       exampleKey: "exampleValue",
     },
@@ -94,11 +103,14 @@ export const uploadFileToIPFS = async (file: File): Promise<UploadResult> => {
 
 export const fetchMetadataFromIPFS = async (tokenURI: string) => {
   try {
-    const metadataUrl = tokenURI.replace(/^ipfs:\/\//, 'https://gateway.pinata.cloud/ipfs/');
+    const metadataUrl = tokenURI.replace(
+      /^ipfs:\/\//,
+      "https://gateway.pinata.cloud/ipfs/"
+    );
     const response = await axios.get(metadataUrl);
     return response.data;
   } catch (error) {
-    console.error('Error fetching IPFS metadata:', error);
+    console.error("Error fetching IPFS metadata:", error);
     return null;
   }
 };

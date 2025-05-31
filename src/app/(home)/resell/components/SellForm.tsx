@@ -25,8 +25,10 @@ import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { Calendar } from '@/components/ui/calendar';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function SellForm() {
+	const router = useRouter();
 	const [myNFTs, setMyNFTs] = useState<GifticonNFT[]>([]);
 	const { isLoading, fetchMyNFTs, listNFT } = useItems();
 
@@ -48,10 +50,18 @@ export default function SellForm() {
 			toast.error('모든 필드를 채워주세요.');
 			return;
 		}
-		await listNFT({
-			tokenId: formData.tokenId,
-			price: formData.price,
-		});
+		try {
+			await listNFT({
+				tokenId: formData.tokenId,
+				price: formData.price,
+			});
+			toast.success('기프티콘이 성공적으로 등록되었습니다.');
+			router.push('/');
+		} catch (error) {
+			toast.error('기프티콘 등록에 실패했습니다. 다시 시도해주세요.');
+			console.error('Error listing NFT:', error);
+			return;
+		}
 	};
 
 	const handleFetchMyNFTs = async () => {
@@ -193,15 +203,15 @@ export default function SellForm() {
 							<div className="space-y-2">
 								<Label htmlFor="description">상품 설명</Label>
 								<Input
-								id="description"
-								placeholder="상품에 대한 설명을 입력하세요"
-								value={formData.description}
-								onChange={(e) =>
-									setFormData((prev) => ({
-									...prev,
-									description: e.target.value,
-									}))
-								}
+									id="description"
+									placeholder="상품에 대한 설명을 입력하세요"
+									value={formData.description}
+									onChange={(e) =>
+										setFormData((prev) => ({
+											...prev,
+											description: e.target.value,
+										}))
+									}
 								/>
 							</div>
 						</>

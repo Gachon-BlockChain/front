@@ -25,8 +25,11 @@ import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, CategoryName, GifticonFormParams } from '@/types';
 import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function SellForm() {
+	const router = useRouter();
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 	const [encryptImagePreviews, setEncryptImagePreviews] = useState<string[]>(
 		[]
@@ -45,7 +48,20 @@ export default function SellForm() {
 	});
 
 	const handleSubmit = async () => {
-		await listNewNFT(formData);
+		if (!formData) {
+			toast.error('모든 필드를 채워주세요.');
+			return;
+		}
+		try {
+			await listNewNFT(formData);
+
+			toast.success('기프티콘이 성공적으로 등록되었습니다.');
+			router.push('/');
+		} catch (error) {
+			toast.error('기프티콘 등록에 실패했습니다. 다시 시도해주세요.');
+			console.error('Error listing NFT:', error);
+			return;
+		}
 	};
 
 	return (
