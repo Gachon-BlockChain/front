@@ -14,7 +14,7 @@ export interface GifticonNFT {
   productName: string;
   description?: string;
   image: string;
-  encryprtImage?: string;
+  encryptImage?: string;
   categoryName: CategoryName;
 }
 
@@ -39,7 +39,7 @@ export interface GifticonItem {
   productName: string;
   description?: string;
   image: string;
-  encryprtImage?: string;
+  encryptImage?: string;
   categoryName: CategoryName;
 }
 
@@ -79,7 +79,7 @@ export const convertToGifticonItem = (
     productName: metadata.productName,
     description: metadata.description,
     image: metadata.image,
-    encryprtImage: metadata.encryprtImage,
+    encryptImage: metadata.encryptImage,
     categoryName: metadata.categoryName,
   };
 };
@@ -113,7 +113,7 @@ export function convertToGifticonNFT(
       productName: gifticonItem.productName,
       description: gifticonItem.description,
       image: gifticonItem.image,
-      encryprtImage: gifticonItem.encryprtImage,
+      encryptImage: gifticonItem.encryptImage,
       categoryName: gifticonItem.categoryName,
     };
   } else {
@@ -135,7 +135,7 @@ export function convertToGifticonNFT(
       productName: metadata.productName,
       description: metadata.description,
       image: metadata.image,
-      encryprtImage: metadata.encryprtImage,
+      encryptImage: metadata.encryptImage,
       categoryName: metadata.categoryName,
     };
   }
