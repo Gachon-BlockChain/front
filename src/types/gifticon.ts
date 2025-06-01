@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { CategoryName } from "./category";
 
 export type GifticonStatus = "Listed" | "Redeemed" | "Penalized";
@@ -13,6 +14,7 @@ export interface GifticonNFT {
   productName: string;
   description?: string;
   image: string;
+  encryprtImage?: string;
   categoryName: CategoryName;
 }
 
@@ -37,6 +39,7 @@ export interface GifticonItem {
   productName: string;
   description?: string;
   image: string;
+  encryprtImage?: string;
   categoryName: CategoryName;
 }
 
@@ -76,27 +79,64 @@ export const convertToGifticonItem = (
     productName: metadata.productName,
     description: metadata.description,
     image: metadata.image,
+    encryprtImage: metadata.encryprtImage,
     categoryName: metadata.categoryName,
   };
 };
 
-export const convertToGifticonNFT = (
+// 1. 오버로드 시그니처 정의
+export function convertToGifticonNFT(
   tokenId: bigint,
   onchainData: any,
   metadata: any
-): GifticonNFT => {
-  return {
-    tokenId,
-    originalOwner: onchainData.originalOwner,
-    depositAmount: Number(onchainData.depositAmount) / 1e18,
-    status: ["Listed", "Redeemed", "Penalized"][
-      onchainData.status
-    ] as GifticonStatus,
-    burnTimestamp: Number(onchainData.burnTimestamp),
+): GifticonNFT;
+export function convertToGifticonNFT(gifticonItem: GifticonItem): GifticonNFT;
 
-    productName: metadata.productName,
-    description: metadata.description,
-    image: metadata.image,
-    categoryName: metadata.categoryName,
-  };
-};
+// 2. 실제 구현
+export function convertToGifticonNFT(
+  arg1: bigint | GifticonItem,
+  arg2?: any,
+  arg3?: any
+): GifticonNFT {
+  if (typeof arg1 === "object" && "depositAmount" in arg1 && "status" in arg1) {
+    // GifticonItem 방식
+    const gifticonItem = arg1 as GifticonItem;
+    return {
+      tokenId: gifticonItem.tokenId,
+      originalOwner: gifticonItem.originalOwner,
+      // 권장 방식 (정확성 보장)
+      depositAmount: Number(
+        ethers.utils.formatUnits(gifticonItem.depositAmount, 18)
+      ),
+      status: gifticonItem.status,
+      burnTimestamp: Number(gifticonItem.burnTimestamp),
+      productName: gifticonItem.productName,
+      description: gifticonItem.description,
+      image: gifticonItem.image,
+      encryprtImage: gifticonItem.encryprtImage,
+      categoryName: gifticonItem.categoryName,
+    };
+  } else {
+    // tokenId + onchainData + metadata 방식
+    const tokenId = arg1 as bigint;
+    const onchainData = arg2;
+    const metadata = arg3;
+    return {
+      tokenId,
+      originalOwner: onchainData.originalOwner,
+
+      depositAmount: Number(
+        ethers.utils.formatUnits(onchainData.depositAmount, 18)
+      ),
+      status: ["Listed", "Redeemed", "Penalized"][
+        onchainData.status
+      ] as GifticonStatus,
+      burnTimestamp: Number(onchainData.burnTimestamp),
+      productName: metadata.productName,
+      description: metadata.description,
+      image: metadata.image,
+      encryprtImage: metadata.encryprtImage,
+      categoryName: metadata.categoryName,
+    };
+  }
+}
