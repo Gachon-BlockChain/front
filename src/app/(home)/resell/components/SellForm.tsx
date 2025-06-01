@@ -21,16 +21,18 @@ import {
 } from '@/components/ui/select';
 import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, GifticonNFT } from '@/types';
-import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { Calendar } from '@/components/ui/calendar';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import useFetchItems from '@/hooks/useFetchItems';
+import useListItems from '@/hooks/useListItems';
 
 export default function SellForm() {
 	const router = useRouter();
 	const [myNFTs, setMyNFTs] = useState<GifticonNFT[]>([]);
-	const { isLoading, fetchMyNFTs, listNFT } = useItems();
+	const { fetchMyNFTs } = useFetchItems();
+	const { isLoading, listNFT } = useListItems();
 
 	const [formData, setFormData] = useState<GifticonNFT & { price: number }>({
 		tokenId: BigInt(-1),

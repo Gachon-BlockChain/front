@@ -1,19 +1,13 @@
 import { toast } from 'react-toastify';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Contract, ethers } from 'ethers';
 import { GifticonNFTABI, MarketplaceABI } from '@/context';
 import {
-	CategoryName,
 	ContractContext,
-	convertToGifticonItem,
-	convertToGifticonNFT,
 	GifticonFormParams,
-	GifticonItem,
-	GifticonNFT,
 	GifticonNFTParams,
 } from '@/types';
 import {
-	fetchMetadataFromIPFS,
 	uploadFileToIPFS,
 	uploadJSONToIPFS,
 } from '@/lib/pinata';
@@ -21,114 +15,9 @@ import { encryptBarcode } from '@/lib/taco';
 
 const MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS ?? '';
 const GIFTICON_NFT_ADDRESS = process.env.NEXT_PUBLIC_GIFTICON_NFT_ADDRESS ?? '';
-const ALCHEMY_URL = process.env.NEXT_PUBLIC_ALCHEMY_URL ?? '';
 
-export default function useItems() {
+export default function useListItems() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-
-	const fetchItems = useCallback(
-		async ({ categoryName }: { categoryName: CategoryName }) => {
-			setIsLoading(true);
-			try {
-				console.log('Fetching items...');
-				const alchemyProvider = new ethers.providers.JsonRpcProvider(
-					ALCHEMY_URL
-				);
-				const marketplaceContract = new Contract(
-					MARKETPLACE_ADDRESS,
-					MarketplaceABI.abi,
-					alchemyProvider
-				);
-				const nftContract = new Contract(
-					GIFTICON_NFT_ADDRESS,
-					GifticonNFTABI.abi,
-					alchemyProvider
-				);
-
-				console.log(marketplaceContract);
-				console.log(nftContract)
-				const tokenIds: bigint[] = await marketplaceContract.getListings();
-				console.log('Token IDs:', tokenIds);
-				const itemPromises = tokenIds.map(async (tokenId) => {
-					const item = await nftContract.gifticons(tokenId); // IGifticonNFT 호출
-					const tokenURI = await nftContract.tokenURI(tokenId); // 메타데이터
-					const metadata = await fetchMetadataFromIPFS(tokenURI); // 여기서 사용
-					const listing = await marketplaceContract.listings(tokenId); // ⬅️ 가격 읽기
-
-					return convertToGifticonItem(tokenId, item, metadata, listing);
-				});
-				const allItems: GifticonItem[] = await Promise.all(itemPromises);
-
-				// categoryName이 있으면 필터링
-				if (categoryName !== '전체') {
-					return allItems.filter((item) => item.categoryName === categoryName);
-				}
-				console.log('All items:', allItems);
-				return allItems;
-			} catch (error) {
-				console.error('Error fetching items:', error);
-				toast.error('요청 설정 중 문제가 발생했습니다.');
-				return [];
-			} finally {
-				setIsLoading(false);
-			}
-		},
-		[]
-	);
-
-	const fetchMyNFTs = async (): Promise<GifticonNFT[]> => {
-		setIsLoading(true);
-		try {
-			const provider = new ethers.providers.Web3Provider(
-				window.ethereum as any
-			);
-
-			const signer = await provider.getSigner();
-			const address = await signer.getAddress();
-
-			const nftContract = new Contract(
-				GIFTICON_NFT_ADDRESS,
-				GifticonNFTABI.abi,
-				signer
-			);
-
-			const result = await nftContract.gifticonsWithIdOfOwner(address);
-			console.log('My NFTs:', result);
-
-			const myNFTs = await Promise.all(
-				result.map(async (entry: { tokenId: bigint; gifticon: any }) => {
-					const tokenURI: string = await nftContract.tokenURI(entry.tokenId);
-					const metadata = await fetchMetadataFromIPFS(tokenURI);
-
-					return convertToGifticonNFT(entry.tokenId, entry.gifticon, metadata);
-				})
-			);
-			console.log('My NFTs after conversion:', myNFTs);
-
-			myNFTs.forEach((nft) => {
-				if (
-					!nft.image ||
-					typeof nft.image !== 'string' ||
-					nft.image.length < 5
-				) {
-					console.warn(
-						`⚠️ 잘못된 이미지 경로: tokenId=${nft.tokenId}, image=${nft.image}`
-					);
-				} else {
-					console.log(`✅ NFT tokenId=${nft.tokenId}, image=${nft.image}`);
-				}
-			});
-
-			toast.success('NFT 등록 성공');
-			return myNFTs;
-		} catch (error) {
-			console.error('Error fetching my NFTs:', error);
-			toast.error('내 NFT를 가져오는 중 문제가 발생했습니다.');
-			return [];
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	const listNewNFT = async (
 		formParams: GifticonFormParams
@@ -263,65 +152,7 @@ export default function useItems() {
 		}
 	};
 
-	const buyNFT = async (tokenId: bigint, price: number): Promise<boolean> => {
-		setIsLoading(true);
-		try {
-			const provider = new ethers.providers.Web3Provider(
-				window.ethereum as any
-			);
-
-			const signer = await provider.getSigner(); // 메타마스크에서 로그인 한 사람이 누군지
-
-			const nftContract = new Contract( // 기프티콘 nft라는 서버랑 연동하는 구간
-				GIFTICON_NFT_ADDRESS,
-				GifticonNFTABI.abi,
-				signer
-			);
-
-			const marketplaceContract = new Contract( // 마켓플레이스 라는 서버랑 연동하는 구간
-				MARKETPLACE_ADDRESS,
-				MarketplaceABI.abi,
-				signer
-			);
-
-			const context: ContractContext = {
-				// 연결해 놓은 정보들을 context로 묶은 것
-				provider,
-				signer,
-				nftContract,
-				marketplaceContract,
-			};
-
-			const priceInEther = ethers.utils.parseUnits(price.toString(), 'ether');
-
-			// optional: callStatic 확인
-			try {
-				await context.marketplaceContract.callStatic.buyItem(tokenId, {
-					value: priceInEther,
-				});
-				console.log('✅ callStatic 통과');
-			} catch (simError) {
-				console.error('❌ 시뮬레이션 실패', simError);
-				toast.error('컨트랙트 실행 조건을 만족하지 않습니다.');
-			}
-
-			const tx = await context.marketplaceContract.buyItem(tokenId, {
-				value: priceInEther,
-			});
-			await tx.wait();
-
-			toast.success('🎉 구매가 완료되었습니다!');
-			return true;
-		} catch (error: any) {
-			console.error('🚨 구매 실패:', error);
-			toast.error('구매 중 문제가 발생했습니다.');
-			return false;
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return { isLoading, fetchItems, fetchMyNFTs, listNewNFT, listNFT, buyNFT };
+	return { isLoading, listNewNFT, listNFT };
 }
 
 async function uploadMetadataToIPFS(

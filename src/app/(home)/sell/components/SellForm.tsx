@@ -23,10 +23,10 @@ import {
 import ImageUploader from './ImageUploader';
 import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, CategoryName, GifticonFormParams } from '@/types';
-import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import useListItems from '@/hooks/useListItems';
 
 export default function SellForm() {
 	const router = useRouter();
@@ -35,7 +35,7 @@ export default function SellForm() {
 		[]
 	);
 
-	const { listNewNFT, isLoading } = useItems();
+	const { listNewNFT, isLoading } = useListItems();
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
 		productName: '',

@@ -13,7 +13,7 @@ function TransactionDetailContent() {
 
   const id = params.tokenId as string; // ✅ 폴더명이 [tokenId]일 경우!
   const typeParam = searchParams.get("type");
-  const type = typeParam === "sale" ? "sale" : "purchase";
+  const type = typeParam === "sale" ? "sale" : "own";
 
   if (!id) {
     return (
