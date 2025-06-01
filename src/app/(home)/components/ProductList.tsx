@@ -3,15 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import CategoryBar from './CategoryBar';
-import useItems from '@/hooks/useItems'; // 직접 작성한 훅
-import { CategoryName, GifticonItem } from '@/types';
+import { CategoryName } from '@/types';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
+import { useItemStore } from '@/store/useItemStore';
+import useFetchItems from '@/hooks/useFetchItems';
 
 export default function ProductList() {
 	const [selectedCategory, setSelectedCategory] =
 		useState<CategoryName>('전체');
-	const { isLoading, fetchItems } = useItems(); // 직접 작성한 훅 사용
-	const [items, setItems] = useState<GifticonItem[]>([]);
+	const { isLoading, fetchItems } = useFetchItems(); // 직접 작성한 훅 사용
+	const { items, setItems } = useItemStore();
 
 	useEffect(() => {
 		const loadItems = async () => {
@@ -22,7 +23,7 @@ export default function ProductList() {
 		};
 
 		loadItems();
-	}, [selectedCategory, fetchItems]);
+	}, [fetchItems, selectedCategory, setItems]);
 
 	return (
 		<>

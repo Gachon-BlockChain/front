@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
 	Card,
@@ -23,10 +23,10 @@ import {
 import ImageUploader from './ImageUploader';
 import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, CategoryName, GifticonFormParams } from '@/types';
-import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import useListItems from '@/hooks/useListItems';
 
 export default function SellForm() {
 	const router = useRouter();
@@ -34,8 +34,48 @@ export default function SellForm() {
 	const [encryptImagePreviews, setEncryptImagePreviews] = useState<string[]>(
 		[]
 	);
+	const [tokenId, setTokenId] = useState<bigint | null>(null);
+	const [tokenURI, setTokenURI] = useState<string | null>(null);
+	const [encryptIpfsHash, setEncryptIpfsHash] = useState<string | null>(null);
 
-	const { listNewNFT, isLoading } = useItems();
+	const {
+		initWeb3,
+		registerGifticon,
+		setMetadata,
+		setTokenURIAndIpfsHash,
+		isLoading,
+		step,
+	} = useListItems();
+
+	useEffect(() => {
+		initWeb3();
+	}, []);
+
+	const handleSubmit = async () => {
+		try {
+			if (step === 1) {
+				const id = await registerGifticon(formData.expiryDate, formData.price);
+				setTokenId(id);
+			} else if (step === 2) {
+				if (!tokenId) throw new Error('tokenId가 없습니다.');
+				const { tokenURI, encryptIpfsHash } = await setMetadata(
+					tokenId,
+					formData
+				);
+				setTokenURI(tokenURI);
+				setEncryptIpfsHash(encryptIpfsHash);
+			} else if (step === 3) {
+				if (!tokenId || !tokenURI || !encryptIpfsHash)
+					throw new Error('필수 데이터가 누락되었습니다.');
+				await setTokenURIAndIpfsHash(tokenId, tokenURI, encryptIpfsHash);
+				toast.success('3단계 완료: NFT 최종 등록 완료');
+				router.push('/resell');
+			}
+		} catch (err: any) {
+			console.error(err);
+			toast.error(err.message || `스텝 ${step} 처리 실패`);
+		}
+	};
 
 	const [formData, setFormData] = useState<GifticonFormParams>({
 		productName: '',
@@ -46,23 +86,6 @@ export default function SellForm() {
 		encryptImage: null as any, // 또는 undefined 후 타입 수정
 		description: '',
 	});
-
-	const handleSubmit = async () => {
-		if (!formData) {
-			toast.error('모든 필드를 채워주세요.');
-			return;
-		}
-		try {
-			await listNewNFT(formData);
-
-			toast.success('기프티콘이 성공적으로 등록되었습니다.');
-			router.push('/');
-		} catch (error) {
-			toast.error('기프티콘 등록에 실패했습니다. 다시 시도해주세요.');
-			console.error('Error listing NFT:', error);
-			return;
-		}
-	};
 
 	return (
 		<>
@@ -201,7 +224,9 @@ export default function SellForm() {
 						className="w-full bg-blue-500 hover:bg-blue-600"
 						onClick={handleSubmit}
 					>
-						등록하기
+						{step === 1 && '1단계: NFT 등록'}
+						{step === 2 && '2단계: 메타데이터 업로드'}
+						{step === 3 && '3단계: NFT - 메타데이터 연결'}
 					</Button>
 				</CardFooter>
 			</Card>

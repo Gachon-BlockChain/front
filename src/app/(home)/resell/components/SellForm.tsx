@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Card,
 	CardContent,
@@ -21,16 +21,18 @@ import {
 } from '@/components/ui/select';
 import PriceNotice from './PriceNotice';
 import { CATEGORY_LIST, GifticonNFT } from '@/types';
-import useItems from '@/hooks/useItems';
 import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { Calendar } from '@/components/ui/calendar';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import useFetchItems from '@/hooks/useFetchItems';
+import useListItems from '@/hooks/useListItems';
 
 export default function SellForm() {
 	const router = useRouter();
 	const [myNFTs, setMyNFTs] = useState<GifticonNFT[]>([]);
-	const { isLoading, fetchMyNFTs, listNFT } = useItems();
+	const { fetchMyNFTs } = useFetchItems();
+	const { isLoading, initWeb3, listNFT } = useListItems();
 
 	const [formData, setFormData] = useState<GifticonNFT & { price: number }>({
 		tokenId: BigInt(-1),
@@ -44,6 +46,10 @@ export default function SellForm() {
 		categoryName: '전체',
 		price: 0,
 	});
+
+	useEffect(() => {
+		initWeb3();
+	}, []);
 
 	const handleSubmit = async () => {
 		if (!formData) {

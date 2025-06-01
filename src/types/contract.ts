@@ -1,8 +1,8 @@
-import type { BrowserProvider, JsonRpcSigner, Contract } from "ethers";
+import type { Contract, ethers, Signer } from "ethers";
 
 export type ContractContext = {
-  provider: BrowserProvider;
-  signer: JsonRpcSigner; // or `Signer` if generic
+  provider: ethers.providers.Web3Provider; // or `JsonRpcProvider` if generic
+  signer: Signer; // or `Signer` if generic
   nftContract: Contract;
   marketplaceContract: Contract;
 };
