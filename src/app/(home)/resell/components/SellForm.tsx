@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Card,
 	CardContent,
@@ -32,7 +32,7 @@ export default function SellForm() {
 	const router = useRouter();
 	const [myNFTs, setMyNFTs] = useState<GifticonNFT[]>([]);
 	const { fetchMyNFTs } = useFetchItems();
-	const { isLoading, listNFT } = useListItems();
+	const { isLoading, initWeb3, listNFT } = useListItems();
 
 	const [formData, setFormData] = useState<GifticonNFT & { price: number }>({
 		tokenId: BigInt(-1),
@@ -46,6 +46,10 @@ export default function SellForm() {
 		categoryName: '전체',
 		price: 0,
 	});
+
+	useEffect(() => {
+		initWeb3();
+	}, []);
 
 	const handleSubmit = async () => {
 		if (!formData) {
