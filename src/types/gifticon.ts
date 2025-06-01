@@ -49,7 +49,7 @@ export interface GifticonFormParams {
   // Marketplace
   price: number;
 
-  // IFPS 메타데이터
+  // IPFS 메타데이터
   productName: string;
   description?: string;
   categoryName: CategoryName;

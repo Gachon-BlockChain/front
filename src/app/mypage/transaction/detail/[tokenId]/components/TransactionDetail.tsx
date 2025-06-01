@@ -8,6 +8,7 @@ import LoadingOverlay from '@/components/ui/loadingSpinner';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useItemStore } from '@/store/useItemStore';
+import useRedeemItems from '@/hooks/useRedeemItems';
 
 interface Props {
 	id: string;
@@ -16,8 +17,11 @@ interface Props {
 
 export default function TransactionDetail({ id, type }: Props) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { myItems, mySaleItems } = useItemStore();
 	const [nft, setNft] = useState<GifticonNFT>();
+
+	const { myItems, mySaleItems } = useItemStore();
+	const { redeemNFT } = useRedeemItems();
+
 	const router = useRouter();
 
 	useEffect(() => {
@@ -42,7 +46,12 @@ export default function TransactionDetail({ id, type }: Props) {
 	}, [id, myItems, mySaleItems, type]);
 
 	const handleDecrypt = () => {
+		if (nft === undefined) {
+			console.error('NFT 정보가 없습니다.');
+			return;
+		}
 		console.log('🔓 NFT 복호화 요청');
+		redeemNFT(nft);
 	};
 
 	if (isLoading) return <LoadingOverlay />;
