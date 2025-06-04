@@ -21,7 +21,6 @@ export default function BottomPurchaseBar({
 }: BottomPurchaseBarProps) {
 	const { buyNFT, isLoading } = useBuyItems();
 	const { redeemNFT } = useRedeemItems();
-	const { items } = useItemStore();
 
 	const handleDecrypt = async () => {
 		const nft = {
