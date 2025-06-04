@@ -1,6 +1,7 @@
 import React from "react";
 import { GifticonItem } from "@/types"; // ✅ 실제 NFT 타입
 import { formatPrice } from "@/lib/utils";
+import { ethers } from "ethers";
 
 interface ProductInfoProps {
   product: GifticonItem;
@@ -17,13 +18,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <p className="text-xs text-gray-500">판매상품 8 · 거래만족도 95%</p>
         </div>
         <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1">
-            <span className="text-[#4AC1DB] font-bold text-sm">{`86°C`}</span>
-            <div className="w-[46px] h-1 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full bg-[#4AC1DB] rounded-full" style={{ width: "40px" }}></div>
-            </div>
-          </div>
-          <span className="text-gray-500 text-xs">매너온도</span>
+          <span className="text-sm font-semibold text-gray-800">
+            담보금: {formatPrice(parseFloat(ethers.utils.formatEther(product.depositAmount)))}
+          </span>
         </div>
       </div>
 

@@ -19,6 +19,8 @@ export default function ProductList() {
 			const items = await fetchItems({
 				categoryName: selectedCategory,
 			});
+			console.log('📦 전체 로드된 아이템 수:', items.length);
+			console.log('🆔 모든 tokenId:', items.map(i => i.tokenId));
 			setItems(items);
 		};
 
