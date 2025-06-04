@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { formatPrice } from '@/lib/utils';
 import useBuyItems from '@/hooks/useBuyItems';
-import useFetchItems from '@/hooks/useFetchItems';
 import useRedeemItems from '@/hooks/useRedeemItems';
 import { useItemStore } from '@/store/useItemStore';
 import { GifticonNFT } from '@/types';
@@ -23,22 +21,7 @@ export default function BottomPurchaseBar({
 }: BottomPurchaseBarProps) {
 	const { buyNFT, isLoading } = useBuyItems();
 	const { redeemNFT } = useRedeemItems();
-	const { myItems, setMyItems } = useItemStore();
-	const { fetchMyNFTs } = useFetchItems();
-
-	const [nft, setNft] = useState<GifticonNFT>();
-	useEffect(() => {
-		const load = async () => {
-			const fetched = await fetchMyNFTs();
-			setMyItems(fetched); // 🎯 반드시 상태에 반영해야 함
-		};
-		load();
-	}, [tokenId]);
-
-	useEffect(() => {
-		const matched = myItems.find((item) => item); // 현재 이 부분에서 무조건 item[0]만 갖고 오도록 설정되어 있음.
-		setNft(matched);
-	}, [myItems]);
+	const { items } = useItemStore();
 
 	const handleDecrypt = async () => {
 		const nft = {
