@@ -73,7 +73,7 @@ export async function decryptBarcode(
   const decrypted = await decrypt(provider, domain, messageKit, context);
   console.log("복호화 완료:", decrypted);
   // Uint8Array → Blob (image/jpeg or image/png 등 명확히 지정)
-  return new File([decrypted], `${productName}.webp`, { type: "image/webp" });
+  return new File([decrypted], `${productName}.png`, { type: "image/png" });
 }
 
 export async function loadMessageKit(

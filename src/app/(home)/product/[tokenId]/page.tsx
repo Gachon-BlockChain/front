@@ -67,6 +67,8 @@ export default function ProductPage() {
 			<BottomPurchaseBar
 				price={nft.price}
 				tokenId={nft.tokenId}
+				barcodeURI={nft.encryptImage}
+				productName={nft.productName}
 			/>
 		</main>
 	);
