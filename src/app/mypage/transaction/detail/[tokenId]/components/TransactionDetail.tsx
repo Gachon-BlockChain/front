@@ -93,7 +93,7 @@ export default function TransactionDetail({ id, type }: Props) {
 			</div>
 
 			{type === 'own' && (
-				<div className="left-0 right-0 flex justify-center">
+				<div className="left-0 right-0 flex justify-center gap-x-4">
 					<Button
 						className="bg-blue-500 hover:bg-blue-600"
 						onClick={() => {
